@@ -14,7 +14,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useAuth } from "@/lib/store/auth";
 import { mutationFn } from "@/lib/mutationFn";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
@@ -44,11 +43,13 @@ export default function LoginForm() {
       localStorage.setItem("accessToken", data.data.access_token);
       router.push("/");
     },
-    onError: (error: any) => {
-      toast("Login failed", {
-        description: error.message,
-	// variant: "destructive",
-      });
+    onError: (error: unknown) => {
+      if (error instanceof Error) {
+        toast("Login failed", {
+          description: error.message,
+          // variant: "destructive",
+        });
+      }
     },
   });
 

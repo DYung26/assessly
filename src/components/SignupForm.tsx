@@ -53,20 +53,21 @@ export default function SignupForm() {
     onSuccess: () => {
 	router.push("/login")
     },
-    onError: (error: any) => {
-      toast("Signup failed", {
-        description: error.message,
-      });
+    onError: (error: unknown) => {
+      if (error instanceof Error) {
+        toast("Signup failed", {
+          description: error.message,
+        });
+      }
     },
   });
 
   const onSubmit = (data: SignupSchema) => {
-    const { confirmPassword, ...rest } = data;
     const payload = {
-      email: rest.email,
-      first_name: rest.firstName,
-      last_name: rest.lastName,
-      password: rest.password,
+      email: data.email,
+      first_name: data.firstName,
+      last_name: data.lastName,
+      password: data.password,
     }
     console.log("Signup data:", payload);
     signupMutation.mutateAsync({

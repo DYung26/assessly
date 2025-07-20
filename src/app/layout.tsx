@@ -4,7 +4,6 @@ import "./globals.css";
 import ReactQueryProvider from "../components/ReactQueryProvider";
 import { Toaster } from "@/components/ui/sonner";
 import RouteChangeLoader from "@/components/RouteChangeLoader";
-import GlobalLoader from "@/components/GlobalLoader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ReactQueryProvider from "../components/ReactQueryProvider";
 import { Toaster } from "@/components/ui/sonner";
+import RouteChangeLoader from "@/components/RouteChangeLoader";
+import GlobalLoader from "@/components/GlobalLoader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,9 +32,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ReactQueryProvider>
+          <RouteChangeLoader />
           {children}
-	</ReactQueryProvider>
-	<Toaster />
+        </ReactQueryProvider>
+        <Toaster />
       </body>
     </html>
   );

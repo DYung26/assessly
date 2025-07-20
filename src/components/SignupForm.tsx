@@ -18,6 +18,8 @@ import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { mutationFn } from "@/lib/mutationFn";
 import { toast } from "sonner";
+import { ThreeDotLoader } from "./ui/three-dot-loader";
+import { useState } from "react";
 
 const signupSchema = z
   .object({
@@ -35,6 +37,8 @@ const signupSchema = z
 type SignupSchema = z.infer<typeof signupSchema>;
 
 export default function SignupForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const form = useForm<SignupSchema>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -50,6 +54,8 @@ export default function SignupForm() {
 
   const signupMutation = useMutation({
     mutationFn: mutationFn,
+    onMutate: () => setIsSubmitting(true),
+    onSettled: () => setIsSubmitting(false),
     onSuccess: () => {
 	router.push("/login")
     },
@@ -89,7 +95,12 @@ export default function SignupForm() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="you@example.com" {...field} />
+                  <Input
+		    type="email"
+		    placeholder="you@example.com"
+		    {...field}
+		    disabled={isSubmitting}
+		/>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -103,7 +114,12 @@ export default function SignupForm() {
               <FormItem>
                 <FormLabel>First Name</FormLabel>
                 <FormControl>
-                  <Input type="text" placeholder="First name" {...field} />
+                  <Input
+		  type="text"
+		  placeholder="First name"
+		  {...field}
+		  disabled={isSubmitting}
+		/>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -117,7 +133,12 @@ export default function SignupForm() {
               <FormItem>
                 <FormLabel>Last Name</FormLabel>
                 <FormControl>
-                  <Input type="text" placeholder="Last name" {...field} />
+                  <Input
+		    type="text"
+		    placeholder="Last name"
+		    {...field}
+		    disabled={isSubmitting}
+		  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -131,7 +152,12 @@ export default function SignupForm() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="••••••••" {...field} />
+                  <Input
+		    type="password"
+		    placeholder="••••••••"
+		    {...field}
+		    disabled={isSubmitting}
+		  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -145,15 +171,24 @@ export default function SignupForm() {
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="••••••••" {...field} />
+                  <Input 
+		    type="password"
+		    placeholder="••••••••"
+		    {...field}
+		    disabled={isSubmitting}
+		  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <Button type="submit" className="w-full">
-            Sign Up
+          <Button
+	    type="submit"
+	    className="w-full cursor-pointer"
+	    disabled={isSubmitting}
+	  >
+            {isSubmitting ? <ThreeDotLoader className="bg-white"/> : "Sign Up"}
           </Button>
         </form>
       </Form>

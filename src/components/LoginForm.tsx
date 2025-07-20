@@ -18,6 +18,9 @@ import { mutationFn } from "@/lib/mutationFn";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import { ThreeDotLoader } from "./ui/three-dot-loader";
+import { useAuth } from "@/lib/store/auth";
 
 const loginSchema = z.object({
   email: z.email({ message: "Invalid email address" }),
@@ -27,6 +30,14 @@ const loginSchema = z.object({
 type LoginSchema = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { login } = useAuth();
+
+  useEffect(() => {
+    console.log("isSubmitting updated:", isSubmitting);
+  }, [isSubmitting]);
+
   const form = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -39,8 +50,10 @@ export default function LoginForm() {
 
   const loginMutation = useMutation({
     mutationFn: mutationFn,
+    onMutate: () => setIsSubmitting(true),
+    onSettled: () => setIsSubmitting(false),
     onSuccess: (data) => {
-      localStorage.setItem("accessToken", data.data.access_token);
+      login(data.data.user, data.data.access_token);
       router.push("/");
     },
     onError: (error: unknown) => {
@@ -73,7 +86,12 @@ export default function LoginForm() {
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="you@example.com" {...field} />
+                  <Input 
+		    type="email"
+		    placeholder="you@example.com"
+		    {...field}
+		    disabled={isSubmitting}
+		  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -87,15 +105,24 @@ export default function LoginForm() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="••••••••" {...field} />
+                  <Input
+		  type="password"
+		  placeholder="••••••••"
+		  {...field}
+		  disabled={isSubmitting}
+		/>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <Button type="submit" className="w-full">
-            Sign In
+          <Button
+	    type="submit"
+	    className="w-full cursor-pointer"
+	    disabled={isSubmitting}
+	  >
+            {isSubmitting ? <ThreeDotLoader className="bg-white"/> : "Sign In"}
           </Button>
         </form>
       </Form>

@@ -1,24 +1,38 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "./ui/button";
+import UserMenu from "./UserMenu";
+import { useUser } from "@/lib/hooks/useUser";
+import PageLoader from "./PageLoader";
+import { useEffect, useState } from "react";
 
 export default function Header() {
-  return(
-    <header className="absolute top-0 left-0 w-full px-8 py-4">
-      <div className="flex items-center justify-between">
-        <Link href="/" className="text-3xl font-bold text-gray-800">
-	  Assessly
-	</Link>
-        <div className="flex gap-4">
-          <Button asChild className="">
-	    <Link href="/login">Login
-	    </Link>
-	  </Button>
-          <Button asChild variant="outline" className="">
-	    <Link href="/signup">Sign Up
-	    </Link>
-	  </Button>
-        </div>
+  const { data: user, isLoading } = useUser();
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // only show overlay *after* hydration, never during SSR/hydration
+  if (mounted && isLoading) return <PageLoader />;
+
+  return (
+    <header className="w-full px-8 py-4 shadow-sm bg-white z-10">
+      <div className="flex items-center justify-between max-w-7xl mx-auto">
+        <Link href="/" className="text-2xl font-bold text-gray-800">
+          Assessly
+        </Link>
+        {user ? (
+          <UserMenu />
+        ) : (
+          <div className="flex gap-4">
+            <Button asChild><Link href="/login">Login</Link></Button>
+            <Button asChild variant="outline"><Link href="/signup">Sign Up</Link></Button>
+          </div>
+        )}
       </div>
     </header>
-  )
+  );
 }

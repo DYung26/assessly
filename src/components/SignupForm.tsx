@@ -20,6 +20,7 @@ import { mutationFn } from "@/lib/mutationFn";
 import { toast } from "sonner";
 import { ThreeDotLoader } from "./ui/three-dot-loader";
 import { useState } from "react";
+import { OtpDialog } from "./OtpDialog";
 
 const signupSchema = z
   .object({
@@ -38,6 +39,8 @@ type SignupSchema = z.infer<typeof signupSchema>;
 
 export default function SignupForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [otpDialogOpen, setOtpDialogOpen] = useState(false);
+  const [emailForOtp, setEmailForOtp] = useState("");
 
   const form = useForm<SignupSchema>({
     resolver: zodResolver(signupSchema),
@@ -57,7 +60,8 @@ export default function SignupForm() {
     onMutate: () => setIsSubmitting(true),
     onSettled: () => setIsSubmitting(false),
     onSuccess: () => {
-	router.push("/login")
+      setEmailForOtp(form.getValues("email"));
+      setOtpDialogOpen(true);
     },
     onError: (error: unknown) => {
       if (error instanceof Error) {
@@ -75,7 +79,7 @@ export default function SignupForm() {
       last_name: data.lastName,
       password: data.password,
     }
-    console.log("Signup data:", payload);
+    // console.log("Signup data:", payload);
     signupMutation.mutateAsync({
       url: "/auth/signup",
       body: payload,
@@ -96,11 +100,11 @@ export default function SignupForm() {
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
-		    type="email"
-		    placeholder="you@example.com"
-		    {...field}
-		    disabled={isSubmitting}
-		/>
+                    type="email"
+                    placeholder="you@example.com"
+                    {...field}
+                    disabled={isSubmitting}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -115,11 +119,11 @@ export default function SignupForm() {
                 <FormLabel>First Name</FormLabel>
                 <FormControl>
                   <Input
-		  type="text"
-		  placeholder="First name"
-		  {...field}
-		  disabled={isSubmitting}
-		/>
+                    type="text"
+                    placeholder="First name"
+                    {...field}
+                    disabled={isSubmitting}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -134,11 +138,11 @@ export default function SignupForm() {
                 <FormLabel>Last Name</FormLabel>
                 <FormControl>
                   <Input
-		    type="text"
-		    placeholder="Last name"
-		    {...field}
-		    disabled={isSubmitting}
-		  />
+                    type="text"
+                    placeholder="Last name"
+                    {...field}
+                    disabled={isSubmitting}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -153,11 +157,11 @@ export default function SignupForm() {
                 <FormLabel>Password</FormLabel>
                 <FormControl>
                   <Input
-		    type="password"
-		    placeholder="••••••••"
-		    {...field}
-		    disabled={isSubmitting}
-		  />
+                    type="password"
+                    placeholder="••••••••"
+                    {...field}
+                    disabled={isSubmitting}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -172,11 +176,11 @@ export default function SignupForm() {
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
                   <Input 
-		    type="password"
-		    placeholder="••••••••"
-		    {...field}
-		    disabled={isSubmitting}
-		  />
+                    type="password"
+                    placeholder="••••••••"
+                    {...field}
+                    disabled={isSubmitting}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -184,14 +188,21 @@ export default function SignupForm() {
           />
 
           <Button
-	    type="submit"
-	    className="w-full cursor-pointer"
-	    disabled={isSubmitting}
-	  >
+            type="submit"
+            className="w-full cursor-pointer"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? <ThreeDotLoader className="bg-white"/> : "Sign Up"}
           </Button>
         </form>
       </Form>
+
+      <OtpDialog
+        open={otpDialogOpen}
+        onOpenChange={setOtpDialogOpen}
+        email={emailForOtp}
+        onSuccess={() => router.push("/login")}
+      />
 
       <div className="text-sm text-center text-muted-foreground mt-4">
         Already have an account?{" "}

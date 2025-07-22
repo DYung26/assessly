@@ -67,7 +67,7 @@ export default function LoginForm() {
   });
 
   const onSubmit = (data: LoginSchema) => {
-    console.log("Submitted:", data);
+    // console.log("Submitted:", data);
     loginMutation.mutateAsync({
       url: "/auth/login",
       body: data,
@@ -87,11 +87,11 @@ export default function LoginForm() {
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input 
-		    type="email"
-		    placeholder="you@example.com"
-		    {...field}
-		    disabled={isSubmitting}
-		  />
+                    type="email"
+                    placeholder="you@example.com"
+                    {...field}
+                    disabled={isSubmitting}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -106,11 +106,11 @@ export default function LoginForm() {
                 <FormLabel>Password</FormLabel>
                 <FormControl>
                   <Input
-		  type="password"
-		  placeholder="••••••••"
-		  {...field}
-		  disabled={isSubmitting}
-		/>
+                    type="password"
+                    placeholder="••••••••"
+                    {...field}
+                    disabled={isSubmitting}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -118,10 +118,10 @@ export default function LoginForm() {
           />
 
           <Button
-	    type="submit"
-	    className="w-full cursor-pointer"
-	    disabled={isSubmitting}
-	  >
+            type="submit"
+            className="w-full cursor-pointer"
+            disabled={isSubmitting}
+          >
             {isSubmitting ? <ThreeDotLoader className="bg-white"/> : "Sign In"}
           </Button>
         </form>

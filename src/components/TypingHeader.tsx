@@ -3,18 +3,18 @@
 import { useEffect, useState } from "react";
 
 export default function TypingHeader() {
-  const phrases = [
-    "Ready to tackle your next assessment?",
-    "Prepare with confidence.",
-    "Crack every test like a pro!",
-    "What's on the agenda today?",
-  ];
-
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
+    const phrases = [
+      "Ready to tackle your next assessment?",
+      "Prepare with confidence.",
+      "Crack every test like a pro!",
+      "What's on the agenda today?",
+    ];
+
     const currentPhrase = phrases[currentPhraseIndex];
     const speed = isDeleting ? 50 : 100;
 

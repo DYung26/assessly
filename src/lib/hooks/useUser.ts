@@ -30,7 +30,7 @@ export function useUser() {
       console.log(data);
       setUser(data);
     }
-  }, [isSuccess, data]);
+  }, [isSuccess, setUser, data]);
 
   useEffect(() => {
     if (isError) {

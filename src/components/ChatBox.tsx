@@ -4,6 +4,7 @@ import { Paperclip, Send, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { useState } from "react";
+import Image from "next/image";
 
 export default function ChatPromptBox() {
   const [files, setFiles] = useState<File[]>([])
@@ -33,7 +34,7 @@ export default function ChatPromptBox() {
             {files.map((file, index) => (
               <div key={index} className="relative w-20 h-20 border rounded-md">
                 {file.type.startsWith("image/") ? (
-                  <img
+                  <Image
                     src={URL.createObjectURL(file)}
                     alt={file.name}
                     className="object-cover w-full h-full"

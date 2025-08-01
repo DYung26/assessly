@@ -1,20 +1,18 @@
 "use client";
 
 import { MessageState, useMessageStore } from "@/lib/store/message";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Message, RoleEnum } from "@/types";
 
 const EMPTY_MESSAGES: Message[] = [];
 
 export default function ChatMessages({
-  chatId, 
+  chatId,
   scrollContainerRef,
 }: {
   chatId: string;
   scrollContainerRef: React.RefObject<HTMLElement | null>;
 }) {
-  if (!chatId) return null;
-
   const selectMessages = useCallback(
     (s: MessageState) => s.messagesByChatId[chatId] ?? EMPTY_MESSAGES,
     [chatId]
@@ -99,6 +97,8 @@ export default function ChatMessages({
       scrollToBottom();
     }*/
   }, [messages.length, streamingMessageId, scrollToBottom]);
+
+  if (!chatId) return null;
 
   return (
     <div className="flex flex-col w-full max-w-3xl py-2 px-2 space-y-4 overflow-y-auto">

@@ -1,7 +1,6 @@
 "use client";
 
 import ChatPromptBox from "@/components/ChatBox";
-import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import TypingHeader from "@/components/TypingHeader";
 import { useUser } from "@/lib/hooks/useUser";

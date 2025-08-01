@@ -14,10 +14,8 @@ type PageProps = {
 
 export default function Assessment({ params }: PageProps) {
   const { assessment_id } = use(params);
-  console.log(assessment_id);
   const { data: user } = useUser();
   const { data: chats = [] } = useAssessmentChats(assessment_id as string);
-  console.log("chats", chats);
   const chatId = chats[0]?.id;
   useMessages(chatId as string);
 

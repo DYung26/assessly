@@ -31,7 +31,7 @@ export function useMessages(chatId: string) {
       setMessages(chatId, data);
       // useMessageStore.getState().setMessages(data);
     }
-  }, [isSuccess, setMessages, data]);
+  }, [isSuccess, setMessages, chatId, data]);
 
   return query;
 }

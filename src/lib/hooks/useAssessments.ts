@@ -18,7 +18,6 @@ export function useAssessmentChats(assessmentId: string) {
     queryFn: async () => {
       console.log("xyz...");
       const res = await axiosInstance.get(`/assessment/${assessmentId}/chats`);
-      console.log("testing...", res);
       return res.data.data.chats as Chat[];
     },
     enabled: !!assessmentId,

@@ -37,7 +37,7 @@ export default function TypingHeader() {
   }, [displayText, isDeleting, currentPhraseIndex]);
 
   return (
-    <h1 className="text-3xl font-bold text-gray-800 min-h-[2.5rem]">
+    <h1 className="text-3xl text-center font-bold text-gray-800 min-h-[2.5rem]">
       {displayText}
       <span className="border-r-2 border-gray-800 animate-pulse ml-1"></span>
     </h1>

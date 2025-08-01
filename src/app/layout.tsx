@@ -4,6 +4,7 @@ import "./globals.css";
 import ReactQueryProvider from "../components/ReactQueryProvider";
 import { Toaster } from "@/components/ui/sonner";
 import RouteChangeLoader from "@/components/RouteChangeLoader";
+import Header from "@/components/Header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,7 @@ export default function RootLayout({
       >
         <ReactQueryProvider>
           <RouteChangeLoader />
+          <Header />
           {children}
         </ReactQueryProvider>
         <Toaster />

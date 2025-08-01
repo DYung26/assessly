@@ -10,15 +10,14 @@ export default function Home() {
   const { data: user } = useUser();
 
   return (
-    <div className="flex flex-col h-screen">
-      <Header />
-      <div className="flex flex-1 overflow-hidden">
-        {user && <Sidebar /> }
-        <main className="flex-1 flex flex-col items-center justify-center gap-8 pt-20 px-4">
-          <TypingHeader />
-          <ChatPromptBox />
-        </main>
-      </div>
+    <div className="flex pt-16 overflow-hidden h-screen">
+      {user && <Sidebar /> }
+      <main
+        className="flex flex-col flex-1 px-4 py-4 gap-8 items-center justify-center"
+      >
+        <TypingHeader />
+        <ChatPromptBox />
+      </main>
     </div>
   );
 }

@@ -19,7 +19,7 @@ export default function Header() {
   if (mounted && isLoading) return <PageLoader />;
 
   return (
-    <header className="w-full px-8 py-4 shadow-sm bg-white z-10">
+    <header className=" fixed top-0 left-0 right-0 w-full px-8 py-4 shadow-sm bg-white z-10">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
         <Link href="/" className="text-2xl font-bold text-gray-800">
           Assessly

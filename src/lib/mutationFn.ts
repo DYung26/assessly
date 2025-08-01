@@ -5,9 +5,44 @@ type MutationArgs<T = unknown> = {
   url: string;
   method?: "POST" | "PUT" | "DELETE";
   body?: T;
+  isStream?: boolean;
+  onChunk?: (chunk: string) => void;
 };
 
-export async function mutationFn({ url, method = "POST", body }: MutationArgs) {
+export async function mutationFn({ url, method = "POST", body, isStream, onChunk }: MutationArgs) {
+  
+  if (isStream) {
+    const accessToken = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+	"Authorization": `Bearer ${accessToken}`
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+
+    if (!response.body) throw new Error("No response body");
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+
+    let fullMessage = "";
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const chunk = decoder.decode(value, { stream: true });
+      fullMessage += chunk;
+
+      if (onChunk) onChunk(chunk);
+    }
+
+    return { content: fullMessage };
+  }
+
+
   try {
     const { data } = await axiosInstance({
       url,

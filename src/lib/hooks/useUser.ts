@@ -1,7 +1,10 @@
+"use client";
+
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/lib/axiosInstance";
-import { useAuth, User } from "@/lib/store/auth";
+import { useAuth } from "@/lib/store/auth";
 import { useEffect } from "react";
+import { User } from "@/types";
 
 export function useUser() {
   const { accessToken, setUser } = useAuth();
@@ -27,14 +30,14 @@ export function useUser() {
 
   useEffect(() => {
     if (isSuccess && data) {
-      console.log(data);
+      // console.log(data);
       setUser(data);
     }
   }, [isSuccess, setUser, data]);
 
   useEffect(() => {
     if (isError) {
-      console.error("User fetch failed:", error);
+      // console.error("User fetch failed:", error);
     }
   }, [isError, error]);
 

@@ -1,12 +1,6 @@
 import { create } from "zustand";
 import { queryClient } from "../queryClient";
-
-export type User = {
-  id: string;
-  email: string;
-  first_name: string;
-  last_name: string;
-}
+import { User } from "@/types";
 
 type AuthState = {
   user: User | null;

@@ -8,6 +8,7 @@ export type User = {
 export type Message = {
   id: string;
   chat_id?: string;
+  file_id?: string;
   role: RoleEnum;
   content: string;
   created_at: string;
@@ -31,3 +32,16 @@ export enum RoleEnum {
   ASSISTANT = "assistant",
   SYSTEM = "system"
 }
+
+export type FileType = {
+  id: string;
+  user_id: string;
+  filename: string;
+  ai_file_id: string;
+  uploaded_at: string;
+}
+
+export type ChatPromptBoxProps = {
+  action: (msg: string, files: File[]) => void;
+};
+

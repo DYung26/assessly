@@ -6,55 +6,63 @@ type MutationArgs<T = unknown> = {
   method?: "POST" | "PUT" | "DELETE";
   body?: T;
   isStream?: boolean;
-  onChunk?: (chunk: string) => void;
+  onChunk?: (chunk: string) => Promise<void>;
+  onDone?: () => void;
 };
 
-export async function mutationFn({ url, method = "POST", body, isStream, onChunk }: MutationArgs) {
-  
+export async function mutationFn({ url, method = "POST", body, isStream, onChunk, onDone }: MutationArgs) {
+  const accessToken = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
   if (isStream) {
-    const accessToken = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
-      method,
+    const res = await fetch(process.env.NEXT_PUBLIC_API_URL + url, {
+      method: "POST",
       headers: {
-        "Content-Type": "application/json",
-	"Authorization": `Bearer ${accessToken}`
+	"Content-Type": "application/json",
+	"Authorization": `Bearer ${accessToken}`,
       },
-      body: body ? JSON.stringify(body) : undefined,
+      body: JSON.stringify(body),
     });
 
-    if (!response.body) throw new Error("No response body");
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder("utf-8");
-
-    let fullMessage = "";
+    let buffer = "";
+    const reader = res.body!.getReader();
+    const decoder = new TextDecoder();
 
     while (true) {
-      const { done, value } = await reader.read();
+      const { value, done } = await reader.read();
       if (done) break;
 
-      const chunk = decoder.decode(value, { stream: true });
-      fullMessage += chunk;
+      buffer += decoder.decode(value, { stream: true });
+      const parts = buffer.split("\n\n");
+      buffer = parts.pop()!;
 
-      if (onChunk) onChunk(chunk);
+      for (const rawEvt of parts) {
+        const data = rawEvt.replace(/^data:\s?/gm, "");
+        console.log("server chunk-1", data);
+
+        if (onChunk) {
+          await onChunk(data);
+        }
+      }
     }
 
-    return { content: fullMessage };
+    onDone?.();
+    return;
   }
-
 
   try {
     const { data } = await axiosInstance({
       url,
       method,
       data: body,
+      headers: body instanceof FormData ? { "Content-Type": undefined } : undefined,
     });
 
     return data;
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       if (error.response) {
-        throw new Error(`${error.response.status}: ${error.response.data.message || error.response.data}`);
+        throw new Error(
+	  `${error.response.status}: ${error.response.data.message || error.response.data}`
+	);
       } else if (error.request) {
         throw new Error("No response from server. Please try again.");
       } else {

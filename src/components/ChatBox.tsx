@@ -5,72 +5,17 @@ import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { useState } from "react";
 import Image from "next/image";
-import { useMutation } from "@tanstack/react-query";
-import { mutationFn } from "@/lib/mutationFn";
-import { useMessageStore } from "@/lib/store/message";
-import { RoleEnum } from "@/types";
+import { ChatPromptBoxProps } from "@/types";
 
-export default function ChatPromptBox({ chatId }: { chatId?: string }) {
-  const {
-    appendMessage, appendToLastAssistantMessage, setStreamingMessageId,
-  } = useMessageStore();
+export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [message, setMessage] = useState('');
 
-  const stableChatId = chatId ?? Date.now().toString();
-
-  const sendMutation = useMutation({
-    mutationFn: mutationFn,
-  })
-
   const handleSend = async () => {
     if (!message.trim()) return;
-
-    setMessage(""); // Clear input
-
-    const userMessageId = Date.now().toString() + "-u";
-    appendMessage(stableChatId, {
-      id: userMessageId,
-      chat_id: stableChatId,
-      role: RoleEnum.USER,
-      content: message,
-      created_at: new Date().toISOString(),
-    });
-
-    const assistantMessageId = Date.now().toString() + "-a";
-    appendMessage(stableChatId, {
-      id: assistantMessageId,
-      chat_id: chatId,
-      role: RoleEnum.ASSISTANT,
-      content: "",
-      created_at: new Date().toISOString(),
-    });
-
-    setStreamingMessageId(assistantMessageId);
-
-    try {
-      await sendMutation.mutateAsync({
-        url: "/message",
-        method: "POST",
-        body: {
-          chat_id: stableChatId,
-          content: message,
-        },
-        isStream: true,
-        onChunk: (raw) => {
-          const chunk = raw
-            .split("\n")
-            .map((line) => line.replace(/^data:\s*/i, ""))
-            .filter(Boolean)
-            .join("\n");
-          appendToLastAssistantMessage(stableChatId, assistantMessageId, chunk);
-        },
-      });
-
-      setStreamingMessageId(null);
-    } catch (error) {
-      console.error("Message sending failed", error);
-    }
+    action(message, files);
+    setMessage("");
+    setFiles([]);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -81,19 +26,17 @@ export default function ChatPromptBox({ chatId }: { chatId?: string }) {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    /*const file = e.target.files?.[0];
-    if (file) {
-      console.log("Selected file:", file);
-      // TODO: Upload or preview logic
-    }*/
-   if (!e.target.files) return;
-   const newFiles = Array.from(e.target.files);
-   setFiles(prev => [...prev, ...newFiles]);
-  };
+    const fileList = e.target.files;
+    if (!fileList) return;
+
+    const newFiles = Array.from(fileList);
+
+    setFiles(prev => [...prev, ...newFiles]);
+  }
 
   const removeFile = (indexToRemove: number) => {
     setFiles(prev => prev.filter((_, index) => index !== indexToRemove));
-  }
+  };
 
   return (
     <div className="w-full max-w-3xl mx-auto px-0 pb-4 z-10">
@@ -108,6 +51,7 @@ export default function ChatPromptBox({ chatId }: { chatId?: string }) {
                   <Image
                     src={URL.createObjectURL(file)}
                     alt={file.name}
+                    fill
                     className="object-cover w-full h-full"
                   />
                 ) : (

@@ -15,7 +15,7 @@ export default function Home() {
         className="flex flex-col flex-1 px-4 py-4 gap-8 items-center justify-center"
       >
         <TypingHeader />
-        <ChatPromptBox />
+        <ChatPromptBox action={() => {}} />
       </main>
     </div>
   );

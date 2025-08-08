@@ -37,7 +37,7 @@ export function useUser() {
 
   useEffect(() => {
     if (isError) {
-      // console.error("User fetch failed:", error);
+      console.error("User fetch failed:", error);
     }
   }, [isError, error]);
 

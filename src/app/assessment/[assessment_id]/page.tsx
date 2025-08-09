@@ -114,10 +114,12 @@ export default function Assessment({ params }: PageProps) {
            * Idea: Detect section boundaries based on markdown patterns, not just punctuation.
            */
           const lineEndRegex = /[,.!?](\s+|$)/g;
-          console.log(remaining);
+          // console.log(remaining);
 
           let match: RegExpExecArray | null;
+          let matchedSomething = false;
           while ((match = lineEndRegex.exec(remaining)) !== null) {
+            matchedSomething = true;
             const endIndex = match.index + match[0].length;
 
             const completeLine = remaining.slice(0, endIndex);
@@ -126,6 +128,10 @@ export default function Assessment({ params }: PageProps) {
             setStreamingContent(buffer); // (prev) => prev + completeLine);
 
             remaining = remaining.slice(endIndex);
+          }
+
+          if (!matchedSomething) {
+            setStreamingContent(buffer + remaining);
           }
 
           await new Promise((r) => setTimeout(r, 0));

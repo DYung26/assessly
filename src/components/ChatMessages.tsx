@@ -17,9 +17,9 @@ export default function ChatMessages({
 }) {
   const containerRef = scrollContainerRef;
 
-  console.log("chat_messages", messages.length);
+  /*console.log("chat_messages", messages.length);
   console.log("streamingContent", streamingContent);
-  console.log("streamingMessageId", streamingMessageId);
+  console.log("streamingMessageId", streamingMessageId);*/
 
   const scrollToBottom = useCallback((smooth = true) => {
     const c = containerRef.current;
@@ -53,7 +53,7 @@ export default function ChatMessages({
             }`}
           >
             <div
-              className="prose prose-sm max-w-none list-disc prose-ul:ml-4"
+              className=""
               dangerouslySetInnerHTML={{ __html: content }}
             />
           </div>

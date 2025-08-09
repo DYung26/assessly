@@ -35,8 +35,10 @@ export async function mutationFn({ url, method = "POST", body, isStream, onChunk
       buffer = parts.pop()!;
 
       for (const rawEvt of parts) {
-        const data = rawEvt.replace(/^data:\s?/gm, "");
-        console.log("server chunk-1", data);
+        let data = rawEvt
+          .replace(/^data:\s?/gm, "");
+        console.log("[server chunk]", data, data.length);
+        if (data.length === 0) data = "\n\n\n";
 
         if (onChunk) {
           await onChunk(data);

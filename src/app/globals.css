@@ -119,4 +119,43 @@
   body {
     @apply bg-background text-foreground;
   }
+  table {
+    @apply border-collapse border border-gray-300 w-full;
+  }
+
+  th, td {
+    @apply border border-gray-300 px-3 py-1 text-left;
+  }
+
+  th {
+    @apply bg-gray-100 font-semibold;
+  }
+
+  .math-container {
+    contain: layout;
+  }
+
+  .math-container .katex-display {
+    white-space: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;   /* Firefox */
+    /*-ms-overflow-style: none; /* IE 10+ */
+  }
+
+  .container::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+
+  .container::-webkit-scrollbar-track {
+    background: #0d1117;
+  }
+
+  .container::-webkit-scrollbar-thumb:hover {
+  }
+
+  .math-container .katex {
+    white-space: nowrap;
+    display: inline-block;
+  }
 }

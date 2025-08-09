@@ -16,7 +16,6 @@ export function useAssessmentChats(assessmentId: string) {
   return useQuery({
     queryKey: ["assessmentChats", assessmentId],
     queryFn: async () => {
-      console.log("xyz...");
       const res = await axiosInstance.get(`/assessment/${assessmentId}/chats`);
       return res.data.data.chats as Chat[];
     },

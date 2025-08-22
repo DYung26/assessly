@@ -40,8 +40,9 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
 
   return (
     <div className="w-full max-w-3xl mx-auto px-0 pb-4 z-10">
-    {/*fixed bottom-0 left-0 right-0 ">*/}
-    {/*<div className="w-full max-w-3xl fixed bottom-0 left-0 right-0 mx-auto px-4 pb-4">*/}
+      {/*fixed bottom-0 left-0 right-0 ">*/}
+      {/*<div className="w-full max-w-3xl fixed bottom-0 left-0 right-0
+        mx-auto px-4 pb-4">*/}
       <div className="bg-white border rounded-xl shadow-sm p-2 flex flex-col gap-0">
         {files.length > 0 && (
           <div className="flex flex-wrap gap-2 p-2">
@@ -76,7 +77,7 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
         )}
 
         <Textarea
-          placeholder="Type your message..."
+          placeholder="Type your message to create a new chat in this project..."
           className="resize-none border-0 shadow-none min-h-10 focus-visible:ring-0 
 	  	               focus-visible:ring-offset-0"
           value={message}
@@ -91,7 +92,7 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
           >
             <Paperclip className="w-4 h-4" />
             <span className="text-sm">Attach</span>
-            <input 
+            <input
               type="file"
               multiple
               // accept="image/*,application/pdf"
@@ -105,8 +106,8 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
             className="p-2 rounded-full bg-blue-600 text-white hover:bg-blue-700
 	  		               cursor-pointer"
           >
-  	        <Send className="w-4 h-4"/>
-	        </Button>
+            <Send className="w-4 h-4" />
+          </Button>
         </div>
       </div>
     </div>

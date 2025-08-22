@@ -17,7 +17,7 @@ const md = new MarkdownIt({
       languageLabel = `<div class="bg-[#0d1117] text-white px-2 py-1 rounded-t-lg text-xs font-mono">${lang}</div>`;
       try {
         const highlighted = hljs.highlight(str, { language: lang, ignoreIllegals: true }).value;
-        return `${languageLabel}<pre class="text-xs rounded-b-lg bg-gray-500 overflow-x-auto leading-none"><code class="hljs language-${lang}">${highlighted}</code></pre>`;
+        return `${languageLabel}<pre class="text-xs rounded-b-lg bg-gray-500 overflow-x-auto leading-normal"><code class="hljs language-${lang}">${highlighted}</code></pre>`;
       } catch {}
     }
     return `<pre class="rounded-lg bg-gray-500 overflow-x-auto text-xs"><code class="hljs">${md.utils.escapeHtml(str)}</code></pre>`;

@@ -10,12 +10,13 @@ export default function Home() {
 
   return (
     <div className="flex pt-16 overflow-hidden h-screen">
-      {user && <Sidebar /> }
+      {user && <Sidebar />}
       <main
-        className="flex flex-col flex-1 px-4 py-4 gap-8 items-center justify-center"
+        className="flex flex-col flex-1 px-4 py-4 gap-8 items-center
+                   justify-center"
       >
         <TypingHeader />
-        <ChatPromptBox action={() => {}} />
+        <ChatPromptBox action={() => { }} />
       </main>
     </div>
   );

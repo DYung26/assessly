@@ -10,7 +10,7 @@ export function useMessages(chatId: string) {
   const { setMessages } = useMessageStore();
 
   const query = useQuery({
-    queryKey: [], // ["messages", chatId],
+    queryKey: ["messages", chatId],
     queryFn: async () => {
       const res = await axiosInstance.get(`/chat/${chatId}/messages`);
       return res.data.data.messages as Message[];

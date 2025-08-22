@@ -7,6 +7,7 @@ export type User = {
 
 export type Message = {
   id: string;
+  assessment_id?: string;
   chat_id?: string;
   file_id?: string;
   role: RoleEnum;
@@ -14,16 +15,17 @@ export type Message = {
   created_at: string;
 };
 
-export type Assessment = {
+export type Chat = {
   id: string;
-  user_id: string;
+  assessment_id?: string;
   title: string;
   created_at: string;
 }
 
-export type Chat = {
+export type Assessment = {
   id: string;
-  assessment_id: string;
+  user_id: string;
+  title: string;
   created_at: string;
 }
 

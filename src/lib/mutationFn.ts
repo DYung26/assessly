@@ -16,8 +16,8 @@ export async function mutationFn({ url, method = "POST", body, isStream, onChunk
     const res = await fetch(process.env.NEXT_PUBLIC_API_URL + url, {
       method: "POST",
       headers: {
-	"Content-Type": "application/json",
-	"Authorization": `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${accessToken}`,
       },
       body: JSON.stringify(body),
     });
@@ -63,8 +63,8 @@ export async function mutationFn({ url, method = "POST", body, isStream, onChunk
     if (axios.isAxiosError(error)) {
       if (error.response) {
         throw new Error(
-	  `${error.response.status}: ${error.response.data.message || error.response.data}`
-	);
+          `${error.response.status}: ${error.response.data.message || error.response.data}`
+    );
       } else if (error.request) {
         throw new Error("No response from server. Please try again.");
       } else {

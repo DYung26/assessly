@@ -9,7 +9,7 @@ import { Button } from "./ui/button";
 
 export default function UserMenu() {
   const { user, logout } = useAuth();
-  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const initials = user
     ? `${user.first_name[0] ?? ""}${user.last_name[0] ?? ""}`.toUpperCase()
     : "";

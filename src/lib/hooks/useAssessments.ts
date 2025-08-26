@@ -1,24 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/lib/axiosInstance";
-import { Assessment, Chat } from "@/types";
+import { Assessment } from "@/types";
 
-export function useAssessments() {
+export function useAssessments(userId: string) {
   return useQuery({
-    queryKey: ["assessments"],
+    queryKey: ["assessments", userId],
     queryFn: async () => {
       const res = await axiosInstance.get("/assessment");
       return res.data.data as Assessment[];
     },
-  });
-}
-
-export function useAssessmentChats(assessmentId: string) {
-  return useQuery({
-    queryKey: ["assessmentChats", assessmentId],
-    queryFn: async () => {
-      const res = await axiosInstance.get(`/assessment/${assessmentId}/chats`);
-      return res.data.data.chats as Chat[];
-    },
-    enabled: !!assessmentId,
   });
 }

@@ -19,6 +19,7 @@ export type Chat = {
   id: string;
   assessment_id?: string;
   title: string;
+  initial_message?: string;
   created_at: string;
 }
 

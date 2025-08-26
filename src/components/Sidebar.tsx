@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { ChevronLeft, ChevronRight, Plus, Search, Folder } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area"; // from shadcn/ui
 import { Button } from "./ui/button";
@@ -8,13 +8,15 @@ import clsx from "clsx";
 import { useAssessments } from "@/lib/hooks/useAssessments";
 import { useRouter } from "next/navigation";
 import { NewAssessmentDialog } from "./NewAssessmentDialog";
-// import { useMutation } from "@tanstack/react-query";
-// import { mutationFn } from "@/lib/mutationFn";
+import { useUser } from "@/lib/hooks/useUser";
+import PageLoader from "./PageLoader";
 
 export default function Sidebar() {
+  const {  data: user } = useUser();
+  const { data: assessments = [] } = useAssessments(user?.id || "");
   const [expanded, setExpanded] = useState(true);
   const [newAssessmentsOpen, setNewAssessmentsOpen] = useState(false);
-  const { data: assessments = [] } = useAssessments();
+  const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
   return (
@@ -52,13 +54,17 @@ export default function Sidebar() {
 
       <div className="flex-1 mt-1 border-t border-b shrink-0">
         {expanded && <p className="px-3 py-2 text-xs text-muted-foreground font-semibold uppercase">Assessments</p>}
-        <ScrollArea className="flex-1 px-2 overflow-y-auto mt-2 h-[calc(100vh-320px)]">
+        <ScrollArea className="flex-1 px-2 overflow-y-auto mt-2 h-[calc(100vh-300px)]">
         {/*h-[calc(100vh-220px)]*/}
           <ul className="space-y-2 pb-1">
             {[...assessments].reverse().map(a => (
               <li key={a.id}> 
                 <button
-                  onClick={() => router.push(`/assessment/${a.id}`)}
+                  onClick={() => {
+                    startTransition(() => {
+                      router.push(`/assessment/${a.id}`)
+                    })
+                  }}
                   className="bg-white p-2 rounded-md shadow-sm hover:shadow-md transition cursor-pointer w-full"
                 >
                   <div className="flex items-center gap-2 text-left text-sm font-medium text-gray-800">
@@ -87,6 +93,7 @@ export default function Sidebar() {
         </ScrollArea>
       </div>
       <NewAssessmentDialog open={newAssessmentsOpen} onOpenChange={setNewAssessmentsOpen} />
+      {isPending ? <PageLoader /> : null}
     </aside>
   );
 }

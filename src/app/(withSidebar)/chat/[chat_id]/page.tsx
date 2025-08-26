@@ -5,6 +5,7 @@ import ChatMessages from "@/components/ChatMessages";
 import { sendMessage } from "@/lib/chat/sendMessage";
 import { useMessages } from "@/lib/hooks/useMessages";
 import { mutationFn } from "@/lib/mutationFn";
+import { useChatStore } from "@/lib/store/chat";
 import { Message, RoleEnum } from "@/types";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -35,10 +36,14 @@ export default function Chat({ params }: PageProps) {
   }, [initialMsgs, messages.length]);
 
   const mainRef = useRef<HTMLElement>(null);
+  const hasRunRef = useRef(false);
 
   const uploadFileMutation = useMutation({
     mutationFn: mutationFn,
   });
+
+  const pendingMessage = useChatStore(s => s.pendingMessage);
+  const pendingFiles = useChatStore(s => s.pendingFiles);
 
   const handleSend = (userText: string, files: File[]) => {
     sendMessage({
@@ -53,7 +58,10 @@ export default function Chat({ params }: PageProps) {
         setStreamingMessageId(msg.id);
       },
       onStreamChunk: async (partial) => setStreamingContent(partial),
-      onStreamMeta: (meta) => router.push(`/chat/${meta.chatId}`),
+      onStreamMeta: (meta) => {
+        console.log("Stream meta:", meta);
+        router.push(`/chat/${meta.chatId}`);
+      },
       onStreamDone: (finalContent) => {
         setStreamingMessageId(null);
         setStreamingContent("");
@@ -67,6 +75,14 @@ export default function Chat({ params }: PageProps) {
       },
     });
   };
+
+  useEffect(() => {
+    if (pendingMessage && !hasRunRef.current) {
+      handleSend(pendingMessage as string, pendingFiles as File[]);
+      useChatStore.getState().clearPending();
+      hasRunRef.current = true
+    }
+  }, [pendingMessage, pendingFiles, handleSend]);
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">

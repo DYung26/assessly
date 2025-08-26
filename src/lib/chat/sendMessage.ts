@@ -60,7 +60,7 @@ export async function sendMessage({
 
   try {
     await mutationFn({
-      url: "/message/",
+      url: "/message",
       body: {
         assessment_id: assessmentId,
         chat_id: chatId,
@@ -79,6 +79,11 @@ export async function sendMessage({
         if (parsed && typeof parsed !== "string") {
           if (parsed?.type === "meta") {
             onStreamMeta?.(parsed);
+            // queueMicrotask(() => onStreamMeta?.(parsed));
+            // Promise.resolve().then(() => onStreamMeta?.(parsed));
+            // await new Promise((r) => setTimeout(r, 0));
+            // onStreamMeta?.(parsed);
+            // await new Promise(r => requestAnimationFrame(r));
             return;
           }
         }

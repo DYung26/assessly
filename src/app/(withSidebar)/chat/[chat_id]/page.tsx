@@ -9,7 +9,7 @@ import { useChatStore } from "@/lib/store/chat";
 import { Message, RoleEnum } from "@/types";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
-import { use, useEffect, useRef, useState } from "react";
+import { use, useCallback, useEffect, useRef, useState } from "react";
 
 type PageProps = {
   params: Promise<{ chat_id: string }>;
@@ -45,36 +45,39 @@ export default function Chat({ params }: PageProps) {
   const pendingMessage = useChatStore(s => s.pendingMessage);
   const pendingFiles = useChatStore(s => s.pendingFiles);
 
-  const handleSend = (userText: string, files: File[]) => {
-    sendMessage({
-      chatId,
-      assessmentId,
-      userText,
-      files,
-      uploadFile: (formData) => uploadFileMutation.mutateAsync({ url: "/files/upload", body: formData }).then(res => res.data),
-      onUserMessage: (msg) => setMessages((prev) => [...prev, msg]),
-      onAssistantMessage: (msg) => {
-        setMessages((prev) => [...prev, msg]);
-        setStreamingMessageId(msg.id);
-      },
-      onStreamChunk: async (partial) => setStreamingContent(partial),
-      onStreamMeta: (meta) => {
-        console.log("Stream meta:", meta);
-        router.push(`/chat/${meta.chatId}`);
-      },
-      onStreamDone: (finalContent) => {
-        setStreamingMessageId(null);
-        setStreamingContent("");
-        setMessages((msgs) =>
-          msgs.map((m) =>
-            m.role === RoleEnum.ASSISTANT && m.content === ""
-              ? { ...m, content: finalContent }
-              : m
-          )
-        );
-      },
-    });
-  };
+  const handleSend = useCallback(
+    (userText: string, files: File[]) => {
+      sendMessage({
+        chatId,
+        assessmentId,
+        userText,
+        files,
+        uploadFile: (formData) => uploadFileMutation.mutateAsync({ url: "/files/upload", body: formData }).then(res => res.data),
+        onUserMessage: (msg) => setMessages((prev) => [...prev, msg]),
+        onAssistantMessage: (msg) => {
+          setMessages((prev) => [...prev, msg]);
+          setStreamingMessageId(msg.id);
+        },
+        onStreamChunk: async (partial) => setStreamingContent(partial),
+        onStreamMeta: (meta) => {
+          console.log("Stream meta:", meta);
+          router.push(`/chat/${meta.chatId}`);
+        },
+        onStreamDone: (finalContent) => {
+          setStreamingMessageId(null);
+          setStreamingContent("");
+          setMessages((msgs) =>
+            msgs.map((m) =>
+              m.role === RoleEnum.ASSISTANT && m.content === ""
+                ? { ...m, content: finalContent }
+                : m
+            )
+          );
+        },
+      });
+    },
+    [chatId, assessmentId, uploadFileMutation, router]
+  );
 
   useEffect(() => {
     if (pendingMessage && !hasRunRef.current) {

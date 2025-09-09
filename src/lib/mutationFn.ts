@@ -1,25 +1,39 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
 
-type MutationArgs<T = unknown> = {
+type MutationBody = BodyInit | Record<string, unknown> | null | undefined;
+
+type MutationArgs = {
   url: string;
   method?: "POST" | "PUT" | "DELETE";
-  body?: T;
+  body?: MutationBody;
   isStream?: boolean;
   onChunk?: (chunk: string) => Promise<void>;
   onDone?: () => void;
 };
 
 export async function mutationFn({ url, method = "POST", body, isStream, onChunk, onDone }: MutationArgs) {
-  const accessToken = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+  const accessToken = typeof window !== "undefined"
+    ? localStorage.getItem("accessToken")
+    : null;
+
   if (isStream) {
+    const headers: Record<string, string> = {};
+    let fetchBody: MutationBody = body;
+
+    if (accessToken) headers["Authorization"] = `Bearer ${accessToken}`;
+
+    if (body instanceof FormData) {
+      fetchBody = body;
+    } else {
+      headers["Content-Type"] = "application/json";
+      fetchBody = JSON.stringify(body);
+    }
+
     const res = await fetch(process.env.NEXT_PUBLIC_API_URL + url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify(body),
+      headers,
+      body: fetchBody,
     });
 
     let buffer = "";

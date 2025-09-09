@@ -9,6 +9,7 @@ import { useUser } from "@/lib/hooks/useUser";
 import { useState } from "react";
 import { ThreeDotLoader } from "./ui/three-dot-loader";
 import { queryClient } from "@/lib/queryClient";
+import { useRouter } from "next/navigation";
 
 interface NewAssessmentDialogProps {
   open: boolean;
@@ -24,6 +25,7 @@ type NameSchema = z.infer<typeof nameSchema>;
 export function NewAssessmentDialog({ open, onOpenChange }: NewAssessmentDialogProps) {
   const { data: user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   const form = useForm<NameSchema>({
     resolver: zodResolver(nameSchema),
@@ -42,6 +44,7 @@ export function NewAssessmentDialog({ open, onOpenChange }: NewAssessmentDialogP
         queryKey: ["assessments", user?.id]
       });
       onOpenChange(false);
+      router.push(`/assessment/${data.data.id}`);
     },
   });
 

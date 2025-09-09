@@ -20,7 +20,7 @@ export default function UserMenu() {
     <div>
       <Popover>
         <PopoverTrigger asChild>
-          < div className="w-10 h-10 rounded-full bg-black text-white flex 
+          <div className="w-10 h-10 rounded-full bg-black text-white flex
                items-center justify-center font-semibold text-sm 
                cursor-pointer"
           >

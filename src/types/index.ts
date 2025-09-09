@@ -42,9 +42,17 @@ export type FileType = {
   filename: string;
   ai_file_id: string;
   uploaded_at: string;
+  download_url: string;
 }
 
 export type ChatPromptBoxProps = {
   action: (msg: string, files: File[]) => void;
 };
 
+export type ContextDockProps = {
+  action: (files: File[], instructions: string[]) => void;
+};
+
+export type InstructionsPopoverProps = {
+  action: (instructions: string[]) => void;
+};

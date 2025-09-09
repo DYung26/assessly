@@ -17,7 +17,7 @@ type SendMessageArgs = {
 
 export async function sendMessage({
   chatId,
-  assessmentId,
+  // assessmentId,
   userText,
   files,
   uploadFile,
@@ -62,7 +62,7 @@ export async function sendMessage({
     await mutationFn({
       url: "/message",
       body: {
-        assessment_id: assessmentId,
+        // assessment_id: assessmentId ?? null,
         chat_id: chatId,
         file_id: fileIds[0],
         content: userText,
@@ -97,7 +97,7 @@ export async function sendMessage({
          * be parsed correctly, rather than breaking them mid-stream.
          * Idea: Detect section boundaries based on markdown patterns, not just punctuation.
          */
-        const lineEndRegex = /[,.!?](\s+|$)/g;
+        const lineEndRegex = /[,.!?](\s+|$)|$/g;
         let match: RegExpExecArray | null;
         let matchedSomething = false;
 

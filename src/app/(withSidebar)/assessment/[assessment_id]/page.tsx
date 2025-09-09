@@ -24,6 +24,8 @@ export default function Assessment({ params }: PageProps) {
   const { data: chats = [] } = useAssessmentChats(assessment_id as string);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {setPendingMessage, setPendingFiles} = useChatStore();
+  const [instructions, setInstructions] = useState<string[]>([]);
+  const [markingScheme, setMarkingScheme] = useState<File[]>([]);
   const router = useRouter();
 
   const newChatMutation = useMutation({
@@ -40,7 +42,17 @@ export default function Assessment({ params }: PageProps) {
     },
   });
 
+  const handleContext = (markingScheme:File[], instructions: string[]) => {
+    setInstructions(instructions);
+    setMarkingScheme(markingScheme);
+    // setPendingFiles(markingScheme);
+  }
+
   const handleSend = async (userText: string, files: File[]) => {
+    userText = userText + instructions.map(inst => `\n- ${inst}`).join('');
+    console.log("Initial message:", userText);
+    files.push(...markingScheme);
+
     newChatMutation.mutateAsync({
       url: "/chat",
       body: {
@@ -62,8 +74,9 @@ export default function Assessment({ params }: PageProps) {
                      justify-center"
         >
           <TypingHeader />
-          <ChatPromptBox action={handleSend} /> {/*action={() => { }} />*/}
-          <ContextDock />
+          <ChatPromptBox action={handleSend} />
+          {/*action={() => { }} />*/}
+          <ContextDock action={handleContext} />
           <ChatsList chats={chats} />
         </main>
       }

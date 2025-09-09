@@ -1,8 +1,16 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { memo, useCallback, useEffect } from "react";
 import { Message, RoleEnum } from "@/types";
 import { formatStreamingContent } from "@/lib/utils/textFormat";
+import { useFiles } from "@/lib/hooks/useFiles";
+import { ThreeDotLoader } from "./ui/three-dot-loader";
+// import FilePreview from "reactjs-file-preview";
+import dynamic from "next/dynamic";
+
+const FilePreview = dynamic(() => import("reactjs-file-preview"), {
+  ssr: false,
+});
 
 export default function ChatMessages({
   messages,
@@ -31,63 +39,9 @@ export default function ChatMessages({
     });
   }, [containerRef]);
 
-  /*const scrollMessageToTop = (messageId: string, smooth = true) => {
-    const c = containerRef.current;
-    const el = document.getElementById(messageId); // or a ref to the message
-    if (c && el) {
-      const offsetTop = el.offsetTop; // distance from container’s top
-      c.scrollTo({
-        top: offsetTop, // puts message at the very top
-        behavior: smooth ? "smooth" : "auto",
-      });
-    }
-  };*/
-
   useEffect(() => {
     scrollToBottom();
   }, [messages.length, streamingContent, scrollToBottom]); // - streamingContent
-
-  /*useEffect(() => {
-    // Detect transition: "" -> non-empty (start of streaming)
-    if (prevStreamingRef.current === "" && streamingContent !== "") {
-      scrollToBottom();
-    }
-
-    prevStreamingRef.current = streamingContent;
-  }, [streamingContent, scrollToBottom]);*/
-
-  /*useEffect(() => {
-    // Detect transition: "" -> non-empty (start of streaming)
-    console.log(
-      "streamingMessageId changed:", streamingMessageId,
-      "xyz", prevStreamingRef.current, streamingContent
-    );
-    if (prevStreamingRef.current === "" && streamingContent !== "") {
-      scrollMessageToTop(streamingMessageId as string);
-    }
-
-    prevStreamingRef.current = streamingContent;
-  }, [streamingMessageId, scrollMessageToTop]);*/
-
-  /*useEffect(() => {
-    const c = containerRef.current;
-    if (!c) return;
-
-    const handleScroll = () => {
-      // check if user is near bottom (e.g., within 25px)
-      const isAtBottom = Math.abs(c.scrollHeight - c.scrollTop - c.clientHeight) < 25;
-      setAutoScroll(isAtBottom);
-    };
-
-    c.addEventListener("scroll", handleScroll);
-    return () => c.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    if (autoScroll) {
-      scrollToBottom();
-    }
-  }, [messages.length, streamingContent, autoScroll, scrollToBottom]);*/
 
   return (
     <div className="flex flex-col w-full max-w-3xl py-2 px-2 space-y-4 overflow-y-auto">
@@ -106,13 +60,44 @@ export default function ChatMessages({
               : ""
               }`}
           >
-            <div
-              className=""
-              dangerouslySetInnerHTML={{ __html: content }}
-            />
+            {msg.file_id &&
+              msg.role === RoleEnum.USER &&
+              <MessageFilePreview fileId={msg.file_id} />}
+
+            {isStreaming && !streamingContent ? (
+              <div className="flex justify-start">
+                <ThreeDotLoader className="bg-black" />
+              </div>
+            ) : (
+              <div dangerouslySetInnerHTML={{ __html: content }} />
+            )}
           </div>
         );
       })}
     </div>
   );
 }
+
+const MessageFilePreview = memo(function MessageFilePreview({ fileId }: { fileId: string }) {
+  console.log("MessageFilePreview", fileId);
+  const { data: file, isLoading } = useFiles(fileId);
+  const url = file?.download_url;
+
+  if (isLoading) {
+    return <div className="w-32 h-32 bg-gray-200 animate-pulse rounded-xl mb-2" />;
+  }
+
+  return (
+    <div className="flex items-center justify-center w-40 h-40 rounded-xl bg-gray-100">
+      <FilePreview preview={url || ""} />
+      {/*className="max-w-full max-h-full object-contain"*/}
+    </div>
+    /*<div className="mb-2">
+      <img
+        src={url}
+        alt="file thumbnail"
+        className="max-w-[200px] rounded-lg shadow"
+      />
+    </div>*/
+  );
+});

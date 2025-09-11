@@ -43,14 +43,16 @@ export default function Chat({ params }: PageProps) {
   });
 
   const pendingMessage = useChatStore(s => s.pendingMessage);
+  const pendingInstructions = useChatStore(s => s.pendingInstructions);
   const pendingFiles = useChatStore(s => s.pendingFiles);
 
   const handleSend = useCallback(
-    (userText: string, files: File[]) => {
+    (userText: string, files: File[], instructions: string[] = []) => {
       sendMessage({
         chatId,
         assessmentId,
         userText,
+        instructions,
         files,
         uploadFile: (formData) => uploadFileMutation.mutateAsync({ url: "/files/upload", body: formData }).then(res => res.data),
         onUserMessage: (msg) => setMessages((prev) => [...prev, msg]),
@@ -81,7 +83,9 @@ export default function Chat({ params }: PageProps) {
 
   useEffect(() => {
     if (pendingMessage && !hasRunRef.current) {
-      handleSend(pendingMessage as string, pendingFiles as File[]);
+      handleSend(
+        pendingMessage as string, pendingFiles as File[], pendingInstructions as string[]
+      );
       useChatStore.getState().clearPending();
       hasRunRef.current = true
     }

@@ -6,6 +6,7 @@ type SendMessageArgs = {
   chatId?: string;
   assessmentId?: string;
   userText: string;
+  instructions?: string[];
   files: File[];
   uploadFile: (formData: FormData) => Promise<{ id: string }>;
   onUserMessage: (msg: Message) => void;
@@ -19,6 +20,7 @@ export async function sendMessage({
   chatId,
   // assessmentId,
   userText,
+  instructions,
   files,
   uploadFile,
   onUserMessage,
@@ -66,6 +68,7 @@ export async function sendMessage({
         chat_id: chatId,
         file_id: fileIds[0],
         content: userText,
+        instructions: instructions ?? [],
       },
       isStream: true,
       onChunk: async (raw) => {

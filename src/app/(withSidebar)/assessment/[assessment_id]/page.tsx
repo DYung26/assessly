@@ -23,7 +23,7 @@ export default function Assessment({ params }: PageProps) {
   const { assessment_id } = use(params);
   const { data: chats = [] } = useAssessmentChats(assessment_id as string);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const {setPendingMessage, setPendingFiles} = useChatStore();
+  const {setPendingMessage, setPendingInstructions, setPendingFiles} = useChatStore();
   const [instructions, setInstructions] = useState<string[]>([]);
   const [markingScheme, setMarkingScheme] = useState<File[]>([]);
   const router = useRouter();
@@ -49,8 +49,6 @@ export default function Assessment({ params }: PageProps) {
   }
 
   const handleSend = async (userText: string, files: File[]) => {
-    userText = userText + instructions.map(inst => `\n- ${inst}`).join('');
-    console.log("Initial message:", userText);
     files.push(...markingScheme);
 
     newChatMutation.mutateAsync({
@@ -61,6 +59,7 @@ export default function Assessment({ params }: PageProps) {
       },
     });
     setPendingMessage(userText);
+    setPendingInstructions(instructions);
     setPendingFiles(files);
   }
 

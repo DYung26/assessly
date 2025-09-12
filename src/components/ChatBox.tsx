@@ -117,7 +117,7 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
   };
 
   const handleSend = async () => {
-    if (!message.trim()) return;
+    // if (!message.trim()) return;
     action(message, files);
     setMessage("");
     setFiles([]);

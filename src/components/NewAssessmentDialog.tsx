@@ -45,12 +45,12 @@ export function NewAssessmentDialog({ open, onOpenChange }: NewAssessmentDialogP
       });
       onOpenChange(false);
       router.push(`/assessment/${data.data.id}`);
+      form.reset();
     },
   });
 
   const onSubmit = (data: NameSchema) => {
     console.log("Form submitted with data:", data);
-    form.reset();
     newAssessmentMutation.mutate({
       url: "/assessment",
       body: {

@@ -10,6 +10,7 @@ export type Message = {
   assessment_id?: string;
   chat_id?: string;
   file_id?: string;
+  instructions?: string;
   role: RoleEnum;
   content: string;
   created_at: string;

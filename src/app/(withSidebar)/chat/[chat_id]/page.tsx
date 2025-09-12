@@ -89,7 +89,7 @@ export default function Chat({ params }: PageProps) {
       useChatStore.getState().clearPending();
       hasRunRef.current = true
     }
-  }, [pendingMessage, pendingFiles, handleSend]);
+  }, [pendingMessage, pendingFiles, pendingInstructions, handleSend]);
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">

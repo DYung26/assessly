@@ -42,23 +42,33 @@ export default function Assessment({ params }: PageProps) {
     },
   });
 
-  const handleContext = (markingScheme:File[], instructions: string[]) => {
+  const handleContext = (markingScheme: File[], instructions: string[]) => {
     setInstructions(instructions);
     setMarkingScheme(markingScheme);
     // setPendingFiles(markingScheme);
   }
 
   const handleSend = async (userText: string, files: File[]) => {
+    if (
+      userText.trim().length === 0 &&
+      instructions.length === 0
+      // files.length === 0
+    ) return;
+    //  && markingScheme.length === 0
+
+    const initialMessage = userText + instructions.map(inst => `\n_- ${inst}_`).join('');
+    console.log("Initial Message: ", initialMessage);
+
     files.push(...markingScheme);
 
     newChatMutation.mutateAsync({
       url: "/chat",
       body: {
         assessment_id,
-        initial_message: userText,
+        initial_message: initialMessage,
       },
     });
-    setPendingMessage(userText);
+    setPendingMessage(initialMessage);
     setPendingInstructions(instructions);
     setPendingFiles(files);
   }

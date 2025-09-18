@@ -66,7 +66,7 @@ export async function sendMessage({
       body: {
         // assessment_id: assessmentId ?? null,
         chat_id: chatId,
-        file_id: fileIds ?? [],
+        file_ids: fileIds ?? [],
         content: userText,
         instructions: instructions ?? [],
       },

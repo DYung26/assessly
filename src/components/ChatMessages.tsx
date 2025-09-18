@@ -7,6 +7,8 @@ import { useFiles } from "@/lib/hooks/useFiles";
 import { ThreeDotLoader } from "./ui/three-dot-loader";
 // import FilePreview from "reactjs-file-preview";
 import dynamic from "next/dynamic";
+import CopyButton from "./CopyButton";
+import ReadAloud from "./ReadAloud";
 
 const FilePreview = dynamic(() => import("reactjs-file-preview"), {
   ssr: false,
@@ -47,30 +49,48 @@ export default function ChatMessages({
     <div className="flex flex-col w-full max-w-3xl py-2 px-2 space-y-4 overflow-y-auto">
       {messages.map((msg) => {
         const isStreaming = msg.id === streamingMessageId;
-        const content = isStreaming
+        const { html: content, converted } = isStreaming
           ? formatStreamingContent(streamingContent)
           : formatStreamingContent(msg.content);
 
         const isUser = msg.role === RoleEnum.USER;
         return (
-          <div
-            key={msg.id}
-            className={`rounded-xl p-2 shadow break-words ${isUser
-              ? "ml-auto bg-gray-100 text-left max-w-[50%] min-w-0"
-              : ""
-              }`}
-          >
-            {msg.file_id &&
-              msg.role === RoleEnum.USER &&
-              <MessageFilePreview fileId={msg.file_id} />}
+          <div className="flex flex-col space-y-0.5 " key={msg.id}>
+            <div
+              key={msg.id}
+              className={`rounded-xl p-2 shadow break-words ${isUser
+                ? "ml-auto bg-gray-100 text-left max-w-[50%] min-w-0"
+                : ""
+                }`}
+            >
+              {msg.file_ids &&
+                msg.role === RoleEnum.USER &&
+                msg.file_ids.map((fileId: string) => (
+                  <MessageFilePreview key={fileId} fileId={fileId} />
+                )
+              )}
 
-            {isStreaming && !streamingContent ? (
-              <div className="flex justify-start">
-                <ThreeDotLoader className="bg-black" />
+              {isStreaming && !streamingContent ? (
+                <div className="flex justify-start">
+                  <ThreeDotLoader className="bg-black" />
+                </div>
+              ) : (
+                <div dangerouslySetInnerHTML={{ __html: content }} />
+              )}
+            </div>
+            {!isStreaming &&
+              <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+                  <CopyButton
+                    htmlContent={content}
+                    rawText={converted}
+                  />
+                  {!isUser &&
+                    <ReadAloud
+                      text={converted}
+                    />
+                  }
               </div>
-            ) : (
-              <div dangerouslySetInnerHTML={{ __html: content }} />
-            )}
+            }
           </div>
         );
       })}

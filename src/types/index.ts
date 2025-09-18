@@ -9,7 +9,7 @@ export type Message = {
   id: string;
   assessment_id?: string;
   chat_id?: string;
-  file_id?: string;
+  file_ids?: string[];
   instructions?: string;
   role: RoleEnum;
   content: string;

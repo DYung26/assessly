@@ -42,7 +42,7 @@ export async function sendMessage({
   onUserMessage({
     id: userMessageId,
     chat_id: chatId,
-    file_id: fileIds[0],
+    file_ids: fileIds ?? [],
     role: RoleEnum.USER,
     content: userText,
     created_at: new Date().toISOString(),
@@ -66,7 +66,7 @@ export async function sendMessage({
       body: {
         // assessment_id: assessmentId ?? null,
         chat_id: chatId,
-        file_id: fileIds[0],
+        file_id: fileIds ?? [],
         content: userText,
         instructions: instructions ?? [],
       },

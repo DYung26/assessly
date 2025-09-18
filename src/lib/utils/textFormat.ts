@@ -30,8 +30,10 @@ const md = new MarkdownIt({
     headerless: true,
   });
 
-export function formatStreamingContent(raw: string): string {
-  if (!raw) return "";
+export function formatStreamingContent(
+    raw: string
+): { html: string, converted: string } {
+  if (!raw) return { html: "", converted: "" };
 
   const converted = convertBracketsToDollars(raw);
 
@@ -39,7 +41,7 @@ export function formatStreamingContent(raw: string): string {
 
   const html = renderKatexInHtml(htmlFromMd);
 
-  return html;
+  return { html, converted };
 }
 
 function convertBracketsToDollars(text: string) {

@@ -16,29 +16,16 @@ export default function ReadAloud({ text }: { text: string }) {
     onSuccess: (data) => {
       const url = data.data.download_url;
       console.log("Received signed URL:", url);
-      // Stop any previous playback
+
       if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
+        // attach URL to the unlocked audio element
+        audioRef.current.src = url;
+        audioRef.current.play().catch((err) => {
+          console.error("Playback failed:", err);
+          setIsReading(false);
+        });
       }
 
-      // Create new audio instance
-      const audio = new Audio(url);
-      audioRef.current = audio;
-
-      // Mark reading state
-      setIsReading(true);
-
-      // Handle when audio finishes
-      audio.onended = () => {
-        setIsReading(false);
-      };
-
-      // Play the audio
-      audio.play().catch((err) => {
-        console.error("Playback failed:", err);
-        setIsReading(false);
-      });
     },
     onError: (error: unknown) => {
       if (error instanceof Error) {
@@ -62,6 +49,28 @@ export default function ReadAloud({ text }: { text: string }) {
       setIsReading(false);
       return;
     }
+
+    // Create new audio instance
+    const audio = new Audio();
+    audioRef.current = audio;
+
+    // Mark reading state
+    setIsReading(true);
+
+    // Handle when audio finishes
+    audio.onended = () => {
+      setIsReading(false);
+    };
+
+    // Play the audio
+    /*audio.play().catch((err) => {
+      console.error("Playback failed:", err);
+      setIsReading(false);
+    });*/
+
+    audio.play().catch(() => {
+      /* ignore, since no src yet */
+    });
 
     // Trigger backend request for signed URL
     await readAloudMutation.mutateAsync({

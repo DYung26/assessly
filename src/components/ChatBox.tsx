@@ -28,7 +28,12 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
   const startRecording = async () => {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     streamRef.current = stream;
-    const recorder = new MediaRecorder(stream);
+    const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+      ? "audio/webm;codecs=opus"
+      : MediaRecorder.isTypeSupported("audio/mp4")
+      ? "audio/mp4"
+      : "audio/mpeg";
+    const recorder = new MediaRecorder(stream, { mimeType });
     mediaRecorderRef.current = recorder;
     audioChunksRef.current = [];
     isCancelRef.current = false;
@@ -46,8 +51,19 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
         return;
       }
 
-      const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-      const file = new File([blob], "recording.webm", { type: "audio/webm" });
+      const blob = new Blob(
+        audioChunksRef.current,
+        {
+          type: recorder.mimeType
+        }
+      );
+      const file = new File(
+        [blob],
+        `recording.${recorder.mimeType.includes("mp4") ? "mp4" : "webm"}`,
+        {
+          type: recorder.mimeType,
+        }
+      );
 
       const formData = new FormData();
       formData.append("file", file);

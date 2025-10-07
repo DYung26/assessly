@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { useMutation } from "@tanstack/react-query";
 import { mutationFn } from "@/lib/mutationFn";
 import { useUser } from "@/lib/hooks/useUser";

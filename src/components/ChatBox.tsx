@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, Mic, Paperclip, Send, X } from "lucide-react";
+import { AudioLines, Check, Mic, Paperclip, Send, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { useRef, useState } from "react";
@@ -9,6 +9,7 @@ import { ChatPromptBoxProps } from "@/types";
 // import { FilePreview } from 'reactjs-file-preview';
 import dynamic from "next/dynamic";
 import { mutationFn } from "@/lib/mutationFn";
+import { VoiceAgentDialog } from "./VoiceAgentPopover";
 
 const FilePreview = dynamic(() => import("reactjs-file-preview"), {
   ssr: false,
@@ -18,6 +19,7 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [message, setMessage] = useState('');
   const [isRecording, setIsRecording] = useState(false);
+  const [voiceAgentOpen, setVoiceAgentOpen] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -225,6 +227,14 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
                 </Button>
 
                 <Button
+                  size="icon"
+                  onClick={() => setVoiceAgentOpen(true)}
+                  className="p-1 rounded-full bg-gray-200 text-gray-700 cursor-pointer hover:text-gray-900 hover:bg-gray-300"
+                >
+                  <AudioLines />
+                </Button>
+
+                <Button
                   onClick={handleSend}
                   className="p-1 rounded-full bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
                 >
@@ -252,6 +262,11 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
           </div>
         </div>
       </div>
+
+      <VoiceAgentDialog
+        open={voiceAgentOpen}
+        onOpenChange={setVoiceAgentOpen}
+      />
     </div>
   );
 }

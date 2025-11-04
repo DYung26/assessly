@@ -7,8 +7,7 @@ type SendMessageArgs = {
   assessmentId?: string;
   userText: string;
   instructions?: string[];
-  files: File[];
-  uploadFile: (formData: FormData) => Promise<{ id: string }>;
+  fileIds: string[];
   onUserMessage: (msg: Message) => void;
   onAssistantMessage: (msg: Message) => void;
   onStreamChunk: (chunk: string) => void;
@@ -21,22 +20,13 @@ export async function sendMessage({
   // assessmentId,
   userText,
   instructions,
-  files,
-  uploadFile,
+  fileIds,
   onUserMessage,
   onAssistantMessage,
   onStreamChunk,
   onStreamMeta,
   onStreamDone,
 }: SendMessageArgs) {
-  const fileIds: string[] = [];
-
-  for (const file of files) {
-    const formData = new FormData();
-    formData.append("file", file);
-    const res = await uploadFile(formData);
-    fileIds.push(res.id);
-  }
 
   const userMessageId = Date.now().toString() + "-u";
   onUserMessage({
@@ -79,6 +69,7 @@ export async function sendMessage({
           parsed = null;
         }
 
+        // unused; TODO: remove this
         if (parsed && typeof parsed !== "string") {
           if (parsed?.type === "meta") {
             onStreamMeta?.(parsed);

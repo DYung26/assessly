@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { ChevronLeft, ChevronRight, Plus, Search, Folder } from "lucide-react";
-import { ScrollArea } from "./ui/scroll-area"; // from shadcn/ui
+import { CircleChevronLeft, CircleChevronRight, Plus, Search, Folder, Ellipsis } from "lucide-react";
+import { ScrollArea } from "./ui/scroll-area";
 import { Button } from "./ui/button";
 import clsx from "clsx";
 import { useAssessments } from "@/lib/hooks/useAssessments";
@@ -10,6 +10,8 @@ import { useRouter } from "next/navigation";
 import { NewAssessmentDialog } from "./NewAssessmentDialog";
 import { useUser } from "@/lib/hooks/useUser";
 import PageLoader from "./PageLoader";
+import { Popover, PopoverTrigger } from "./ui/popover";
+import { AssessmentOptionsPopover } from "./AssessmentOptionsPopover";
 
 export default function Sidebar() {
   const {  data: user } = useUser();
@@ -19,6 +21,11 @@ export default function Sidebar() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
+  const handleOptionAction = (option: string, assessmentId: string) => {
+    // Handle different actions here
+    console.log(`Action: ${option}, Assessment ID: ${assessmentId}`);
+  }
+
   return (
     <aside className={clsx(
       "flex flex-col bg-gray-100 border-r border-gray-200 transition-all duration-300",
@@ -26,14 +33,15 @@ export default function Sidebar() {
     )}>
       <div className="flex items-center justify-between px-2 py-4 border-b">
         {expanded && <span className="text-sm font-semibold ml-2">Menu</span>}
-        <Button
-          variant="ghost"
-          size="icon"
+        <button
           onClick={() => setExpanded(!expanded)}
           className="ml-auto cursor-pointer rounded-full w-4 h-4 !bg-gray-100"
         >
-          {expanded ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
-        </Button>
+          {expanded
+            ? <CircleChevronLeft size={18} />
+            : <CircleChevronRight size={18} />
+          }
+        </button>
       </div>
 
       <nav className="p-1 space-y-1 shrink-0">
@@ -58,14 +66,14 @@ export default function Sidebar() {
         {/*h-[calc(100vh-220px)]*/}
           <ul className="space-y-2 pb-1">
             {[...assessments].reverse().map(a => (
-              <li key={a.id}> 
+              <li key={a.id} className="flex gap-2 items-center bg-white rounded-md shadow-sm hover:shadow-md transition w-full"> 
                 <button
                   onClick={() => {
                     startTransition(() => {
                       router.push(`/assessment/${a.id}`)
                     })
                   }}
-                  className="bg-white p-2 rounded-md shadow-sm hover:shadow-md transition cursor-pointer w-full"
+                  className="p-2 cursor-pointer w-full border"
                 >
                   <div className="flex items-center gap-2 text-left text-sm font-medium text-gray-800">
                     <Folder size={16} />
@@ -75,7 +83,7 @@ export default function Sidebar() {
                     <div className="mt-1 text-left text-xs text-gray-500 space-y-1">
                       <div className="flex gap-2 flex-wrap">
                         {/*a.tags.map(tag => (
-                           <span
+                          <span
                             key={tag}
                             className="bg-gray-200 rounded px-2 py-0.5 text-xs"
                           >
@@ -83,16 +91,29 @@ export default function Sidebar() {
                           </span>
                         ))*/}
                       </div>
-                      <p className="text-[10px] text-gray-400">{a.created_at}</p>
+                      <p className="text-[10px] text-gray-400">
+                        {a.created_at}
+                      </p>
                     </div>
                   )}
                 </button>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="border p-2 rounded-full hover:bg-gray-200 transition cursor-pointer">
+                      <Ellipsis size={16} />
+                    </button>
+                  </PopoverTrigger>
+                  <AssessmentOptionsPopover action={handleOptionAction} />
+                </Popover>
               </li>
             ))}
           </ul>
         </ScrollArea>
       </div>
-      <NewAssessmentDialog open={newAssessmentsOpen} onOpenChange={setNewAssessmentsOpen} />
+      <NewAssessmentDialog
+        open={newAssessmentsOpen}
+        onOpenChange={setNewAssessmentsOpen}
+      />
       {isPending ? <PageLoader /> : null}
     </aside>
   );

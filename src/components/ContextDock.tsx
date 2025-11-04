@@ -3,9 +3,12 @@ import { useEffect, useState } from "react";
 import { Popover, PopoverTrigger } from "./ui/popover";
 import { InstructionsPopover } from "./InstructionsPopover";
 import { ContextDockProps } from "@/types";
+import { useMutation } from "@tanstack/react-query";
+import { mutationFn } from "@/lib/mutationFn";
 
 export default function ContextDock ({ action }: ContextDockProps) {
   const [files, setFiles] = useState<File[]>([]);
+  const [fileIds, setFileIds] = useState<string[]>([]);
   const [instructions, setInstructions] = useState<string[]>([]);
   // const [instructionsOpen, setInstructionsOpen] = useState(false);
 
@@ -22,12 +25,28 @@ export default function ContextDock ({ action }: ContextDockProps) {
     setInstructions(instructions);
   }
 
+  const uploadFileMutation = useMutation({
+    mutationFn: mutationFn,
+    onSuccess: (data) => {
+      setFileIds(prev => [...prev, data.data.fileId]);
+    },
+    onError: (error) => {
+      console.error("File upload failed:", error);
+    },
+  });
+
   useEffect(() => {
-    action(files, instructions);
-    /*if (files.length > 0) {
-      console.log("Selected files:", files);
-    }*/
-  }, [files, instructions, action]);
+    const formData = new FormData();
+    const file = files[files.length - 1];
+    formData.append("file", file);
+
+    uploadFileMutation.mutateAsync({
+      url: "/files/upload",
+      body: formData,
+    });
+
+    action(fileIds, instructions);
+  }, [fileIds, files, instructions, uploadFileMutation, action]);
 
   return (
     <div className="flex justify-between max-w-3xl w-full gap-16">

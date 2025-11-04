@@ -4,10 +4,8 @@ import ChatPromptBox from "@/components/ChatBox";
 import ChatMessages from "@/components/ChatMessages";
 import { sendMessage } from "@/lib/chat/sendMessage";
 import { useMessages } from "@/lib/hooks/useMessages";
-import { mutationFn } from "@/lib/mutationFn";
 import { useChatStore } from "@/lib/store/chat";
 import { Message, RoleEnum } from "@/types";
-import { useMutation } from "@tanstack/react-query";
 import { useRouter, useSearchParams } from "next/navigation";
 import { use, useCallback, useEffect, useRef, useState } from "react";
 
@@ -38,23 +36,18 @@ export default function Chat({ params }: PageProps) {
   const mainRef = useRef<HTMLElement>(null);
   const hasRunRef = useRef(false);
 
-  const uploadFileMutation = useMutation({
-    mutationFn: mutationFn,
-  });
-
   const pendingMessage = useChatStore(s => s.pendingMessage);
   const pendingInstructions = useChatStore(s => s.pendingInstructions);
-  const pendingFiles = useChatStore(s => s.pendingFiles);
+  const pendingFileIds = useChatStore(s => s.pendingFileIds);
 
   const handleSend = useCallback(
-    (userText: string, files: File[], instructions: string[] = []) => {
+    (userText: string, fileIds: string[], instructions: string[] = []) => {
       sendMessage({
         chatId,
         assessmentId,
         userText,
         instructions,
-        files,
-        uploadFile: (formData) => uploadFileMutation.mutateAsync({ url: "/files/upload", body: formData }).then(res => res.data),
+        fileIds,
         onUserMessage: (msg) => setMessages((prev) => [...prev, msg]),
         onAssistantMessage: (msg) => {
           setMessages((prev) => [...prev, msg]);
@@ -78,18 +71,18 @@ export default function Chat({ params }: PageProps) {
         },
       });
     },
-    [chatId, assessmentId, uploadFileMutation, router]
+    [chatId, assessmentId, router]
   );
 
   useEffect(() => {
     if (pendingMessage && !hasRunRef.current) {
       handleSend(
-        pendingMessage as string, pendingFiles as File[], pendingInstructions as string[]
+        pendingMessage as string, pendingFileIds as string[], pendingInstructions as string[]
       );
       useChatStore.getState().clearPending();
       hasRunRef.current = true
     }
-  }, [pendingMessage, pendingFiles, pendingInstructions, handleSend]);
+  }, [pendingMessage, pendingFileIds, pendingInstructions, handleSend]);
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">

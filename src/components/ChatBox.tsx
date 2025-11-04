@@ -6,17 +6,13 @@ import { Textarea } from "./ui/textarea";
 import { useRef, useState } from "react";
 import Image from "next/image";
 import { ChatPromptBoxProps } from "@/types";
-// import { FilePreview } from 'reactjs-file-preview';
-import dynamic from "next/dynamic";
 import { mutationFn } from "@/lib/mutationFn";
 import { VoiceAgentDialog } from "./VoiceAgentPopover";
-
-const FilePreview = dynamic(() => import("reactjs-file-preview"), {
-  ssr: false,
-});
+import FilePreviewWrapper from "./FilePreviewWrapper";
 
 export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
   const [files, setFiles] = useState<File[]>([]);
+  const [fileIds, setFileIds] = useState<string[]>([]);
   const [message, setMessage] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [voiceAgentOpen, setVoiceAgentOpen] = useState(false);
@@ -132,11 +128,12 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
 
   const removeFile = (indexToRemove: number) => {
     setFiles(prev => prev.filter((_, index) => index !== indexToRemove));
+    setFileIds(prev => prev.filter((_, index) => index !== indexToRemove));
   };
 
   const handleSend = async () => {
     // if (!message.trim()) return;
-    action(message, files);
+    action(message, fileIds);
     setMessage("");
     setFiles([]);
   };
@@ -166,7 +163,12 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
                     className="object-cover w-full h-full"
                   />
                 ) : (
-                  <FilePreview preview={file} />
+                  <FilePreviewWrapper
+                    file={file}
+                    onUploaded={(fileId) => {
+                      setFileIds((prev) => [...prev, fileId]);
+                    }}
+                  />
                   /*<div className="flex items-center justify-center h-full text-xs text-gray-500 px-1 text-center">
                     {file.name.split('.').pop()?.toUpperCase()}
                   </div>*/

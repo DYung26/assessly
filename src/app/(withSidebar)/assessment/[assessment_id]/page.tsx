@@ -23,9 +23,9 @@ export default function Assessment({ params }: PageProps) {
   const { assessment_id } = use(params);
   const { data: chats = [] } = useAssessmentChats(assessment_id as string);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const {setPendingMessage, setPendingInstructions, setPendingFiles} = useChatStore();
+  const {setPendingMessage, setPendingInstructions, setPendingFileIds} = useChatStore();
   const [instructions, setInstructions] = useState<string[]>([]);
-  const [markingScheme, setMarkingScheme] = useState<File[]>([]);
+  const [markingScheme, setMarkingScheme] = useState<string[]>([]);
   const router = useRouter();
 
   const newChatMutation = useMutation({
@@ -42,13 +42,13 @@ export default function Assessment({ params }: PageProps) {
     },
   });
 
-  const handleContext = (markingScheme: File[], instructions: string[]) => {
+  const handleContext = (markingScheme: string[], instructions: string[]) => {
     setInstructions(instructions);
     setMarkingScheme(markingScheme);
     // setPendingFiles(markingScheme);
   }
 
-  const handleSend = async (userText: string, files: File[]) => {
+  const handleSend = async (userText: string, fileIds: string[]) => {
     if (
       userText.trim().length === 0 &&
       instructions.length === 0
@@ -59,7 +59,7 @@ export default function Assessment({ params }: PageProps) {
     const initialMessage = userText + instructions.map(inst => `\n_- ${inst}_`).join('');
     console.log("Initial Message: ", initialMessage);
 
-    files.push(...markingScheme);
+    fileIds.push(...markingScheme);
 
     newChatMutation.mutateAsync({
       url: "/chat",
@@ -70,7 +70,7 @@ export default function Assessment({ params }: PageProps) {
     });
     setPendingMessage(initialMessage);
     setPendingInstructions(instructions);
-    setPendingFiles(files);
+    setPendingFileIds(fileIds);
   }
 
   if (!assessment_id) return null;

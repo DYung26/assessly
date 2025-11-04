@@ -57,6 +57,7 @@ export default function LoginForm() {
       router.push("/");
     },
     onError: (error: unknown) => {
+      console.error("Login failed:", error);
       if (error instanceof Error) {
         toast("Login failed", {
           description: error.message,

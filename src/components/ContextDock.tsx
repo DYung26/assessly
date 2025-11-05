@@ -1,5 +1,4 @@
 import { FilePlus2, Pencil } from "lucide-react";
-import { useEffect, useState } from "react";
 import { Popover, PopoverTrigger } from "./ui/popover";
 import { InstructionsPopover } from "./InstructionsPopover";
 import { ContextDockProps } from "@/types";
@@ -7,10 +6,16 @@ import { useMutation } from "@tanstack/react-query";
 import { mutationFn } from "@/lib/mutationFn";
 
 export default function ContextDock ({ action }: ContextDockProps) {
-  const [files, setFiles] = useState<File[]>([]);
-  const [fileIds, setFileIds] = useState<string[]>([]);
-  const [instructions, setInstructions] = useState<string[]>([]);
-  // const [instructionsOpen, setInstructionsOpen] = useState(false);
+  const uploadFileMutation = useMutation({
+    mutationFn: mutationFn,
+    onSuccess: (data) => {
+      // setFileId(data.data.id);
+      action(data.data.id);
+    },
+    onError: (error) => {
+      console.error("File upload failed:", error);
+    },
+  });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = e.target.files;
@@ -18,35 +23,33 @@ export default function ContextDock ({ action }: ContextDockProps) {
 
     const newFiles = Array.from(fileList);
 
-    setFiles(prev => [...prev, ...newFiles]);
+    newFiles.forEach(file => {
+      const formData = new FormData();
+      formData.append("file", file);
+      console.log("Uploading file:", file.name);
+
+      uploadFileMutation.mutateAsync({
+        url: "/files/upload",
+        body: formData,
+      });
+    });
   }
 
   const handleInstructions = (instructions: string[]) => {
-    setInstructions(instructions);
+    action("", instructions);
   }
 
-  const uploadFileMutation = useMutation({
-    mutationFn: mutationFn,
-    onSuccess: (data) => {
-      setFileIds(prev => [...prev, data.data.fileId]);
-    },
-    onError: (error) => {
-      console.error("File upload failed:", error);
-    },
-  });
+  // const removeInstruction = (indexToRemove: number) => {
+  //   setInstructions(prev => prev.filter((_, index) => index !== indexToRemove));
+  // };
 
-  useEffect(() => {
-    const formData = new FormData();
-    const file = files[files.length - 1];
-    formData.append("file", file);
+  // const removeFile = (indexToRemove: number) => {
+  //   setFileIds(prev => prev.filter((_, index) => index !== indexToRemove));
+  // };
 
-    uploadFileMutation.mutateAsync({
-      url: "/files/upload",
-      body: formData,
-    });
-
-    action(fileIds, instructions);
-  }, [fileIds, files, instructions, uploadFileMutation, action]);
+  // useEffect(() => {
+  //   action(fileId, instructions);
+  // }, [fileId, instructions, action]);
 
   return (
     <div className="flex justify-between max-w-3xl w-full gap-16">

@@ -42,10 +42,12 @@ export default function Assessment({ params }: PageProps) {
     },
   });
 
-  const handleContext = (markingScheme: string[], instructions: string[]) => {
-    setInstructions(instructions);
-    setMarkingScheme(markingScheme);
-    // setPendingFiles(markingScheme);
+  const handleContext = (
+    markingScheme: string = "", instructions: string[] = []
+  ) => {
+    if (markingScheme) setMarkingScheme(prev => [...prev, markingScheme]);
+    if (instructions.length > 0)
+      setInstructions(prev => [...prev, ...instructions]);
   }
 
   const handleSend = async (userText: string, fileIds: string[]) => {

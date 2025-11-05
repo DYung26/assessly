@@ -51,7 +51,7 @@ export type ChatPromptBoxProps = {
 };
 
 export type ContextDockProps = {
-  action: (files: string[], instructions: string[]) => void;
+  action: (files?: string, instructions?: string[]) => void;
 };
 
 export type InstructionsPopoverProps = {

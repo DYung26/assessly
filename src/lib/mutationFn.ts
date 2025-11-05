@@ -12,7 +12,9 @@ type MutationArgs = {
   onDone?: () => void;
 };
 
-export async function mutationFn({ url, method = "POST", body, isStream, onChunk, onDone }: MutationArgs) {
+export async function mutationFn(
+  { url, method = "POST", body, isStream, onChunk, onDone }: MutationArgs
+) {
   const accessToken = typeof window !== "undefined"
     ? localStorage.getItem("accessToken")
     : null;

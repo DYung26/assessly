@@ -35,6 +35,7 @@ export async function sendMessage({
     file_ids: fileIds ?? [],
     role: RoleEnum.USER,
     content: userText,
+
     created_at: new Date().toISOString(),
   });
 

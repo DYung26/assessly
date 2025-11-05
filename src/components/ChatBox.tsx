@@ -3,16 +3,22 @@
 import { AudioLines, Check, Mic, Paperclip, Send, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
-import { useRef, useState } from "react";
-import Image from "next/image";
+import { useCallback, useEffect, useRef, useState } from "react";
+// import Image from "next/image";
 import { ChatPromptBoxProps } from "@/types";
 import { mutationFn } from "@/lib/mutationFn";
 import { VoiceAgentDialog } from "./VoiceAgentPopover";
 import FilePreviewWrapper from "./FilePreviewWrapper";
+import { useMutation } from "@tanstack/react-query";
 
 export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [fileIds, setFileIds] = useState<string[]>([]);
+  // const [uploadStates, setUploadStates] = useState<Record<string, boolean>>({});
+  const [uploads, setUploads] = useState<
+    { file: File; isPending: boolean; id?: string }[]
+  >([]);
+
   const [message, setMessage] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [voiceAgentOpen, setVoiceAgentOpen] = useState(false);
@@ -117,6 +123,59 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
     setIsRecording(false);
   };
 
+  type UploadVariables = {
+    url: string;
+    body: FormData;
+    file: File;
+  };
+
+  type UploadResponse = {
+    data: {
+      id: string;
+      [key: string]: unknown;
+    };
+  };
+
+  const uploadFileMutation = useMutation<UploadResponse, Error, UploadVariables>({
+    mutationFn,
+    onSuccess: (data, variables) => {
+      const { file } = variables;
+      console.log("[FPW] File uploaded successfully:", data.data.id);
+      setUploads((prev) =>
+        prev.map((u) => (u.file.name === file.name ? { ...u, isPending: false } : u))
+      );
+      // setUploadStates((prev) => ({ ...prev, [fileName]: false }));
+      setFileIds(prev => [...prev, data.data.id]);
+    },
+    onError: (error) => {
+      console.error("[FPW] File upload failed:", error);
+    },
+  });
+
+  const handleFileUpload = useCallback((file: File) => {
+    setUploads((prev) =>
+      prev.map((u) => (u.file.name === file.name ? { ...u, isPending: true } : u))
+    );
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    uploadFileMutation.mutateAsync({
+      url: "/files/upload",
+      body: formData,
+      file,
+    });
+  }, [uploadFileMutation]);
+
+  useEffect(() => {
+    files.forEach(file => {
+      if (!uploads.some(u => u.file.name === file.name)) {
+        setUploads(prev => [...prev, { file, isPending: false }]);
+        handleFileUpload(file);
+      }
+    });
+  }, [files, uploads, handleFileUpload]);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = e.target.files;
     if (!fileList) return;
@@ -126,9 +185,16 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
     setFiles(prev => [...prev, ...newFiles]);
   }
 
-  const removeFile = (indexToRemove: number) => {
-    setFiles(prev => prev.filter((_, index) => index !== indexToRemove));
-    setFileIds(prev => prev.filter((_, index) => index !== indexToRemove));
+  const removeFile = (fileNameToRemove: string) => {
+    setFiles(prev => prev.filter(file => file.name !== fileNameToRemove));
+
+    setUploads(prev => prev.filter(u => u.file.name !== fileNameToRemove));
+
+    setFileIds(prev => {
+      // Assuming uploads and fileIds map by order, this keeps it aligned
+      const updatedUploads = uploads.filter(u => u.file.name !== fileNameToRemove);
+      return prev.slice(0, updatedUploads.length);
+    });
   };
 
   const handleSend = async () => {
@@ -148,14 +214,17 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
   return (
     <div className="w-full max-w-3xl mx-auto px-0 pb-4 z-10">
       {/*fixed bottom-0 left-0 right-0 ">*/}
-      {/*<div className="w-full max-w-3xl fixed bottom-0 left-0 right-0
-        mx-auto px-4 pb-4">*/}
+      {/*<div className="w-full max-w-3xl fixed bottom-0 left-0 right-0 mx-auto px-4 pb-4">*/}
       <div className="bg-white border rounded-xl shadow-sm p-2 flex flex-col gap-0">
-        {files.length > 0 && (
+        {uploads.length > 0 && (
           <div className="flex flex-wrap gap-2 p-2">
-            {files.map((file, index) => (
-              <div key={index} className="relative w-20 h-20 border rounded-md">
-                {file.type.startsWith("image/") ? (
+            {uploads.map(({ file, isPending }) => (
+              <div key={file.name} className="relative w-20 h-20 border rounded-md">
+                <FilePreviewWrapper
+                  file={file}
+                  isPending={isPending}
+                />
+                {/*file.type.startsWith("image/") ? (
                   <Image
                     src={URL.createObjectURL(file)}
                     alt={file.name}
@@ -169,14 +238,14 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
                       setFileIds((prev) => [...prev, fileId]);
                     }}
                   />
-                  /*<div className="flex items-center justify-center h-full text-xs text-gray-500 px-1 text-center">
-                    {file.name.split('.').pop()?.toUpperCase()}
-                  </div>*/
-                )}
+                  // <div className="flex items-center justify-center h-full text-xs text-gray-500 px-1 text-center">
+                  //   {file.name.split('.').pop()?.toUpperCase()}
+                  // </div>
+                )*/}
 
                 {/* X Button */}
                 <button
-                  onClick={() => removeFile(index)}
+                  onClick={() => removeFile(file.name)}
                   className="absolute -top-2 -right-2 w-4 h-4 flex items-center justify-center bg-white/80 text-red-500 hover:text-red-700 shadow-sm border rounded-full cursor-pointer z-10"
                 >
                   <X className="w-3 h-3" />
@@ -211,7 +280,7 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
             <input
               type="file"
               multiple
-              // accept="image/*,application/pdf"
+              accept="image/*,application/pdf"
               className="hidden"
               onChange={handleFileChange}
             />

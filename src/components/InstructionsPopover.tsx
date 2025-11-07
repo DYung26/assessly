@@ -17,7 +17,9 @@ export function InstructionsPopover({ action }: InstructionsPopoverProps) {
 
   const toggleItem = (item: string) => {
     setSelected((prev) =>
-      prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]
+      prev.includes(item)
+        ? prev.filter((i) => i !== item)
+        : [...prev, item]
     );
   };
 

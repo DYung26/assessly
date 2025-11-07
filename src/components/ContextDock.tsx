@@ -4,6 +4,7 @@ import { InstructionsPopover } from "./InstructionsPopover";
 import { ContextDockProps } from "@/types";
 import { useMutation } from "@tanstack/react-query";
 import { mutationFn } from "@/lib/mutationFn";
+import { useCallback } from "react";
 
 export default function ContextDock ({ action }: ContextDockProps) {
   const uploadFileMutation = useMutation({
@@ -35,9 +36,9 @@ export default function ContextDock ({ action }: ContextDockProps) {
     });
   }
 
-  const handleInstructions = (instructions: string[]) => {
+  const handleInstructions = useCallback((instructions: string[]) => {
     action("", instructions);
-  }
+  }, [action]);
 
   // const removeInstruction = (indexToRemove: number) => {
   //   setInstructions(prev => prev.filter((_, index) => index !== indexToRemove));

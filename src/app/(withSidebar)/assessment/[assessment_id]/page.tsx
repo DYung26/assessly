@@ -12,7 +12,7 @@ import { queryClient } from "@/lib/queryClient";
 import { useChatStore } from "@/lib/store/chat";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { use, useState } from "react";
+import { use, useCallback, useState } from "react";
 
 type PageProps = {
   params: Promise<{ assessment_id: string }>;
@@ -42,13 +42,13 @@ export default function Assessment({ params }: PageProps) {
     },
   });
 
-  const handleContext = (
+  const handleContext = useCallback((
     markingScheme: string = "", instructions: string[] = []
   ) => {
     if (markingScheme) setMarkingScheme(prev => [...prev, markingScheme]);
     if (instructions.length > 0)
       setInstructions(prev => [...prev, ...instructions]);
-  }
+  }, []);
 
   const handleSend = async (userText: string, fileIds: string[]) => {
     if (

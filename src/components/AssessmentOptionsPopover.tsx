@@ -11,7 +11,7 @@ export function AssessmentOptionsPopover(
       className="w-48 p-2"
     >
       <div className="flex flex-col gap-2">
-      {["Edit", "Delete", "Duplicate", "Export"].map((option) => (
+      {["Rename", "Share", "Delete"].map((option) => (
           <button
             key={option}
             onClick={() => action(option, "")}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { CircleChevronLeft, CircleChevronRight, Plus, Search, Folder, Ellipsis } from "lucide-react";
+import { CircleChevronLeft, CircleChevronRight, Plus, Search, Folder, Ellipsis, Bot } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { Button } from "./ui/button";
 import clsx from "clsx";
@@ -12,6 +12,10 @@ import { useUser } from "@/lib/hooks/useUser";
 import PageLoader from "./PageLoader";
 import { Popover, PopoverTrigger } from "./ui/popover";
 import { AssessmentOptionsPopover } from "./AssessmentOptionsPopover";
+import { useMutation } from "@tanstack/react-query";
+import { mutationFn } from "@/lib/mutationFn";
+import { queryClient } from "@/lib/queryClient";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 export default function Sidebar() {
   const {  data: user } = useUser();
@@ -21,8 +25,31 @@ export default function Sidebar() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
+  const updateAssessmentMutation = useMutation({
+    mutationFn,
+    onSuccess: (data) => {
+      console.log("Assessment updated:", data);
+      queryClient.invalidateQueries({
+        queryKey: ["assessments", user?.id || ""]
+      });
+    },
+  });
+
   const handleOptionAction = (option: string, assessmentId: string) => {
     // Handle different actions here
+    if (option === "Rename") {
+      /* updateAssessmentMutation.mutateAsync({
+        url: `/assessments/${assessmentId}`,
+        method: "PUT",
+        body: { title: "" },
+      }); */
+    } else if (option === "Delete") {
+      /* updateAssessmentMutation.mutateAsync({
+        url: `/assessments/${assessmentId}`,
+        method: "DELETE",
+      }); */
+    }
+
     console.log(`Action: ${option}, Assessment ID: ${assessmentId}`);
   }
 
@@ -58,6 +85,23 @@ export default function Sidebar() {
           <Search size={18} className="mr-2" />
           {expanded && "Search Assessments"}
         </Button>
+
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                className="w-full justify-start cursor-not-allowed p-2 rounded-xl text-white bg-gradient-to-r from-cyan-500 via-indigo-600 via-purple-600 to-rose-500 hover:opacity-90 transition-all duration-300 shadow-md"
+              >
+                <Bot size={18} className="mr-2 text-white" />
+                {expanded && "AI Tutor - Coming Soon"}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              Coming soon
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </nav>
 
       <div className="flex-1 mt-1 border-t border-b shrink-0">
@@ -73,7 +117,7 @@ export default function Sidebar() {
                       router.push(`/assessment/${a.id}`)
                     })
                   }}
-                  className="p-2 cursor-pointer w-full border"
+                  className="p-2 cursor-pointer w-full"
                 >
                   <div className="flex items-center gap-2 text-left text-sm font-medium text-gray-800">
                     <Folder size={16} />
@@ -99,7 +143,7 @@ export default function Sidebar() {
                 </button>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <button className="border p-2 rounded-full hover:bg-gray-200 transition cursor-pointer">
+                    <button className="p-2 rounded-full hover:bg-gray-200 transition cursor-pointer">
                       <Ellipsis size={16} />
                     </button>
                   </PopoverTrigger>

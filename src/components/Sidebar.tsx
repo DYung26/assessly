@@ -12,9 +12,9 @@ import { useUser } from "@/lib/hooks/useUser";
 import PageLoader from "./PageLoader";
 import { Popover, PopoverTrigger } from "./ui/popover";
 import { AssessmentOptionsPopover } from "./AssessmentOptionsPopover";
-import { useMutation } from "@tanstack/react-query";
+/* import { useMutation } from "@tanstack/react-query";
 import { mutationFn } from "@/lib/mutationFn";
-import { queryClient } from "@/lib/queryClient";
+import { queryClient } from "@/lib/queryClient"; */
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 export default function Sidebar() {
@@ -25,7 +25,7 @@ export default function Sidebar() {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  const updateAssessmentMutation = useMutation({
+  /* const updateAssessmentMutation = useMutation({
     mutationFn,
     onSuccess: (data) => {
       console.log("Assessment updated:", data);
@@ -33,7 +33,7 @@ export default function Sidebar() {
         queryKey: ["assessments", user?.id || ""]
       });
     },
-  });
+  }); */
 
   const handleOptionAction = (option: string, assessmentId: string) => {
     // Handle different actions here

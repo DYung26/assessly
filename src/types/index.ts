@@ -59,5 +59,7 @@ export type InstructionsPopoverProps = {
 };
 
 export type AssessmentOptionsPopoverProps = {
-  action: (option: string, assessmentId: string) => void;
+  action: (option: string, assessmentId: string, title: string) => void;
+  assessmentId: string;
+  title: string;
 };

@@ -12,10 +12,11 @@ import { useUser } from "@/lib/hooks/useUser";
 import PageLoader from "./PageLoader";
 import { Popover, PopoverTrigger } from "./ui/popover";
 import { AssessmentOptionsPopover } from "./AssessmentOptionsPopover";
-/* import { useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { mutationFn } from "@/lib/mutationFn";
-import { queryClient } from "@/lib/queryClient"; */
+import { queryClient } from "@/lib/queryClient";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import { DeleteAssessmentDialog } from "./DeleteAssessmentDialog";
 
 export default function Sidebar() {
   const {  data: user } = useUser();
@@ -23,9 +24,14 @@ export default function Sidebar() {
   const [expanded, setExpanded] = useState(true);
   const [newAssessmentsOpen, setNewAssessmentsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingTitle, setEditingTitle] = useState("");
+  const [deletingId, setDeletingId] = useState<string>("");
+  const [deleteAssessmentOpen, setDeleteAssessmentOpen] = useState(false);
+
   const router = useRouter();
 
-  /* const updateAssessmentMutation = useMutation({
+  const updateAssessmentMutation = useMutation({
     mutationFn,
     onSuccess: (data) => {
       console.log("Assessment updated:", data);
@@ -33,25 +39,38 @@ export default function Sidebar() {
         queryKey: ["assessments", user?.id || ""]
       });
     },
-  }); */
+  });
 
-  const handleOptionAction = (option: string, assessmentId: string) => {
-    // Handle different actions here
+  const handleOptionAction = (
+    option: string,
+    assessmentId: string,
+    title: string
+  ) => {
     if (option === "Rename") {
-      /* updateAssessmentMutation.mutateAsync({
-        url: `/assessments/${assessmentId}`,
-        method: "PUT",
-        body: { title: "" },
-      }); */
+      setEditingId(assessmentId);
+      setEditingTitle(title);
     } else if (option === "Delete") {
-      /* updateAssessmentMutation.mutateAsync({
-        url: `/assessments/${assessmentId}`,
-        method: "DELETE",
-      }); */
+      setDeletingId(assessmentId);
+      setDeleteAssessmentOpen(true);
     }
 
     console.log(`Action: ${option}, Assessment ID: ${assessmentId}`);
   }
+
+  const saveEdit = (id: string) => {
+    updateAssessmentMutation.mutate({
+      url: `/assessment/${id}`,
+      method: "PUT",
+      body: { title: editingTitle },
+    });
+
+    setEditingId(null);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditingTitle("");
+  };
 
   return (
     <aside className={clsx(
@@ -120,8 +139,24 @@ export default function Sidebar() {
                   className="p-2 cursor-pointer w-full"
                 >
                   <div className="flex items-center gap-2 text-left text-sm font-medium text-gray-800">
-                    <Folder size={16} />
-                    {expanded ? a.title : null}
+                    {editingId === a.id ? (
+                      <input
+                        autoFocus
+                        className="text-sm border rounded px-1 w-full"
+                        value={editingTitle}
+                        onChange={(e) => setEditingTitle(e.target.value)}
+                        onBlur={() => saveEdit(a.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") saveEdit(a.id);
+                          if (e.key === "Escape") cancelEdit();
+                        }}
+                      />
+                    ) : (
+                      <>
+                        <Folder size={16} />
+                        {expanded ? a.title : null}
+                      </>
+                    )}
                   </div>
                   {expanded && (
                     <div className="mt-1 text-left text-xs text-gray-500 space-y-1">
@@ -147,7 +182,11 @@ export default function Sidebar() {
                       <Ellipsis size={16} />
                     </button>
                   </PopoverTrigger>
-                  <AssessmentOptionsPopover action={handleOptionAction} />
+                  <AssessmentOptionsPopover
+                    action={handleOptionAction}
+                    assessmentId={a.id}
+                    title={a.title}
+                  />
                 </Popover>
               </li>
             ))}
@@ -157,6 +196,11 @@ export default function Sidebar() {
       <NewAssessmentDialog
         open={newAssessmentsOpen}
         onOpenChange={setNewAssessmentsOpen}
+      />
+      <DeleteAssessmentDialog
+        open={deleteAssessmentOpen}
+        onOpenChange={setDeleteAssessmentOpen}
+        assessmentId={deletingId}
       />
       {isPending ? <PageLoader /> : null}
     </aside>

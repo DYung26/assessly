@@ -40,7 +40,7 @@ export default function FilesPage() {
         <div className="max-w-6xl w-full mx-auto">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">My Files</h1>
           <p className="text-sm text-gray-500 mb-6">
-            All files you've uploaded across assessments and chats
+            All files you&apos;ve uploaded across assessments and chats
           </p>
 
           {isLoading ? (

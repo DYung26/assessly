@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { CircleChevronLeft, CircleChevronRight, Plus, Search, Folder, Ellipsis, Bot, Files } from "lucide-react";
+import { CircleChevronLeft, CircleChevronRight, Plus, Search, Folder, FolderOpen, Ellipsis, Bot, Files } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { Button } from "./ui/button";
 import clsx from "clsx";
 import { useAssessments } from "@/lib/hooks/useAssessments";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { NewAssessmentDialog } from "./NewAssessmentDialog";
+import { DeleteAssessmentDialog } from "./DeleteAssessmentDialog";
 import { useUser } from "@/lib/hooks/useUser";
 import PageLoader from "./PageLoader";
 import { Popover, PopoverTrigger } from "./ui/popover";
@@ -23,11 +24,15 @@ export default function Sidebar() {
   const { data: assessments = [] } = useAssessments(user?.id || "");
   const [expanded, setExpanded] = useState(true);
   const [newAssessmentsOpen, setNewAssessmentsOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [assessmentToDelete, setAssessmentToDelete] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState("");
 
   const router = useRouter();
+  const params = useParams();
+  const currentAssessmentId = params?.assessment_id as string | undefined;
 
   const updateAssessmentMutation = useMutation({
     mutationFn,
@@ -48,10 +53,8 @@ export default function Sidebar() {
       setEditingId(assessmentId);
       setEditingTitle(title);
     } else if (option === "Delete") {
-      updateAssessmentMutation.mutateAsync({
-        url: `/assessment/${assessmentId}`,
-        method: "DELETE",
-      });
+      setAssessmentToDelete(assessmentId);
+      setDeleteDialogOpen(true);
     }
 
     console.log(`Action: ${option}, Assessment ID: ${assessmentId}`);
@@ -81,11 +84,11 @@ export default function Sidebar() {
         {expanded && <span className="text-sm font-semibold ml-2">Menu</span>}
         <button
           onClick={() => setExpanded(!expanded)}
-          className="ml-auto cursor-pointer rounded-full w-4 h-4 !bg-gray-100"
+          className="cursor-pointer rounded-full w-4 h-4 !bg-gray-100 mr-2"
         >
           {expanded
-            ? <CircleChevronLeft size={18} />
-            : <CircleChevronRight size={18} />
+            ? <CircleChevronLeft size={20} />
+            : <CircleChevronRight size={20} />
           }
         </button>
       </div>
@@ -96,12 +99,12 @@ export default function Sidebar() {
           onClick={() => setNewAssessmentsOpen(true)}
           className="w-full justify-start cursor-pointer py-1 border-b border-t"
         >
-          <Plus size={18} className="mr-2" />
+          <Plus size={20} className="mr-2" />
           {expanded && "New Assessment"}
         </Button>
 
         <Button variant="ghost" className="w-full justify-start cursor-pointer p-1 border-t border-b !bg-gray-100">
-          <Search size={18} className="mr-2" />
+          <Search size={20} className="mr-2" />
           {expanded && "Search Assessments"}
         </Button>
 
@@ -114,7 +117,7 @@ export default function Sidebar() {
           }}
           className="w-full justify-start cursor-pointer p-1 border-b"
         >
-          <Files size={18} className="mr-2" />
+          <Files size={20} className="mr-2" />
           {expanded && "My Files"}
         </Button>
 
@@ -125,7 +128,7 @@ export default function Sidebar() {
                 variant="ghost"
                 className="w-full justify-start cursor-not-allowed p-2 rounded-xl text-white bg-gradient-to-r from-cyan-500 via-indigo-600 via-purple-600 to-rose-500 hover:opacity-90 transition-all duration-300 shadow-md"
               >
-                <Bot size={18} className="mr-2 text-white" />
+                <Bot size={20} className="mr-2 text-white" />
                 {expanded && "AI Tutor - Coming Soon"}
               </Button>
             </TooltipTrigger>
@@ -137,70 +140,84 @@ export default function Sidebar() {
       </nav>
 
       <div className="flex-1 mt-1 border-t border-b shrink-0">
-        {expanded && <p className="px-3 py-2 text-xs text-muted-foreground font-semibold uppercase">Assessments</p>}
-        <ScrollArea className="flex-1 px-2 overflow-y-auto mt-2 h-[calc(100vh-300px)]">
+        {expanded &&
+          <p
+            className="px-3 py-2 text-xs text-muted-foreground font-semibold uppercase"
+          >
+            Assessments
+          </p>
+        }
+        <ScrollArea
+          className="flex-1 overflow-y-auto overflow-x-hidden mt-2 h-[calc(100vh-360px)]"
+        >
         {/*h-[calc(100vh-220px)]*/}
-          <ul className="space-y-2 pb-1">
+          <ul className="space-y-2 pb-1 px-2">
             {[...assessments].reverse().map(a => (
-              <li key={a.id} className="flex gap-2 items-center bg-white rounded-md shadow-sm hover:shadow-md transition w-full"> 
-                <button
-                  onClick={() => {
-                    startTransition(() => {
-                      router.push(`/assessment/${a.id}`)
-                    })
-                  }}
-                  className="p-2 cursor-pointer w-full"
-                >
-                  <div className="flex items-center gap-2 text-left text-sm font-medium text-gray-800">
-                    {editingId === a.id ? (
-                      <input
-                        autoFocus
-                        className="text-sm border rounded px-1 w-full"
-                        value={editingTitle}
-                        onChange={(e) => setEditingTitle(e.target.value)}
-                        onBlur={() => saveEdit(a.id)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") saveEdit(a.id);
-                          if (e.key === "Escape") cancelEdit();
-                        }}
-                      />
-                    ) : (
-                      <>
-                        <Folder size={16} />
-                        {expanded ? a.title : null}
-                      </>
-                    )}
-                  </div>
+              <li
+                key={a.id}
+                className={clsx(
+                  "group bg-white rounded-md shadow-sm hover:shadow-md transition overflow-hidden",
+                  expanded && "w-60"
+                )}
+              >
+                <div className="flex items-center gap-2 p-2">
+                  <button
+                    onClick={() => {
+                      startTransition(() => {
+                        router.push(`/assessment/${a.id}`)
+                      })
+                    }}
+                    className="flex-1 cursor-pointer text-left min-w-0 overflow-hidden"
+                  >
+                    <div className="flex items-center gap-2 text-sm font-medium text-gray-800">
+                      {editingId === a.id ? (
+                        <input
+                          autoFocus
+                          className="text-sm border rounded px-1 w-full"
+                          value={editingTitle}
+                          onChange={(e) => setEditingTitle(e.target.value)}
+                          onBlur={() => saveEdit(a.id)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") saveEdit(a.id);
+                            if (e.key === "Escape") cancelEdit();
+                          }}
+                        />
+                      ) : (
+                        <>
+                          {currentAssessmentId === a.id ? (
+                            <FolderOpen size={16} className="flex-shrink-0" />
+                          ) : (
+                            <Folder size={16} className="flex-shrink-0" />
+                          )}
+                          {expanded && <span className="truncate">{a.title}</span>}
+                        </>
+                      )}
+                    </div>
+                  </button>
+                  
                   {expanded && (
-                    <div className="mt-1 text-left text-xs text-gray-500 space-y-1">
-                      <div className="flex gap-2 flex-wrap">
-                        {/*a.tags.map(tag => (
-                          <span
-                            key={tag}
-                            className="bg-gray-200 rounded px-2 py-0.5 text-xs"
-                          >
-                            {tag}
-                          </span>
-                        ))*/}
-                      </div>
-                      <p className="text-[10px] text-gray-400">
+                    <div className="flex items-center justify-center w-12 h-8 flex-shrink-0 relative">
+                      <span className="absolute inset-0 flex items-center justify-center text-[10px] text-gray-400 group-hover:opacity-0 transition-opacity whitespace-nowrap">
                         {formatDateTime(a.created_at)}
-                      </p>
+                      </span>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button 
+                            className="absolute inset-0 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-full hover:bg-gray-200 transition-opacity cursor-pointer"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Ellipsis size={16} />
+                          </button>
+                        </PopoverTrigger>
+                        <AssessmentOptionsPopover
+                          action={handleOptionAction}
+                          assessmentId={a.id}
+                          title={a.title}
+                        />
+                      </Popover>
                     </div>
                   )}
-                </button>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button className="p-2 rounded-full hover:bg-gray-200 transition cursor-pointer">
-                      <Ellipsis size={16} />
-                    </button>
-                  </PopoverTrigger>
-                  <AssessmentOptionsPopover
-                    action={handleOptionAction}
-                    assessmentId={a.id}
-                    title={a.title}
-                  />
-                </Popover>
+                </div>
               </li>
             ))}
           </ul>
@@ -210,6 +227,13 @@ export default function Sidebar() {
         open={newAssessmentsOpen}
         onOpenChange={setNewAssessmentsOpen}
       />
+      {assessmentToDelete && (
+        <DeleteAssessmentDialog
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          assessmentId={assessmentToDelete}
+        />
+      )}
       {isPending ? <PageLoader /> : null}
     </aside>
   );

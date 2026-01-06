@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
+import { APP_CONFIG } from "@/lib/config";
 
 interface InstructionDialogProps {
   open: boolean;
@@ -21,9 +22,9 @@ export function InstructionsDialog({ open, onOpenChange, onSave }: InstructionDi
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Add Instructions</DialogTitle>
+          <DialogTitle>Add Instructions Manually</DialogTitle>
           <DialogDescription>
-            Tailor the way Aslyn responds to this assessment
+            Tailor the way {APP_CONFIG.ASSISTANT_NAME} responds to this assessment
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">

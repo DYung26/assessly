@@ -264,7 +264,7 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
 
         {!isRecording && (
           <Textarea
-            placeholder="Type your message to create a new chat in this project..."
+            placeholder="Type your message to create a new chat in this assessment..."
             className="resize-none border-0 shadow-none min-h-10 focus-visible:ring-0 focus-visible:ring-offset-0"
             value={message}
             onKeyDown={handleKeyDown}

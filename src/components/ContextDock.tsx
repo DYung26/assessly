@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import MarkingSchemeModal from "./MarkingSchemeModal";
 import { InstructionsDialog } from "./InstructionsDialog";
+import { APP_CONFIG } from "@/lib/config";
 
 export default function ContextDock ({ action }: ContextDockProps) {
   const params = useParams();
@@ -39,7 +40,7 @@ export default function ContextDock ({ action }: ContextDockProps) {
       >
         <div className="flex flex-col text-left">
           <span className="text-sm font-medium">Add instructions manually</span>
-          <span className="text-xs text-gray-500">Tailor the way Aslyn responds to this assessment</span>
+          <span className="text-xs text-gray-500">Tailor the way {APP_CONFIG.ASSISTANT_NAME} responds to this assessment</span>
         </div>
         <div className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full">
           <Pencil size={18} />

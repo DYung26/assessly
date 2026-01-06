@@ -21,7 +21,7 @@ export const useAuth = create<AuthState>((set) => {
     loading: true,
     login: (user, accessToken) => {
       localStorage.setItem("accessToken", accessToken);
-      set({ user, accessToken });
+      set({ user, accessToken, loading: false });
       queryClient.setQueryData(["me"], user);
     },
     logout: () => {
@@ -29,6 +29,6 @@ export const useAuth = create<AuthState>((set) => {
       set({ user: null, accessToken: null });
       queryClient.clear();
     },
-    setUser: (user) => set({ user }),
+    setUser: (user) => set({ user, loading: false }),
   };
 });

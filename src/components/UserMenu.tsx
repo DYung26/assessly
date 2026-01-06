@@ -6,6 +6,7 @@ import { SettingsDialog } from "./SettingsDialog";
 import { useState } from "react";
 import { useAuth } from "@/lib/store/auth";
 import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
 export default function UserMenu() {
   const { user, logout } = useAuth();
@@ -13,6 +14,7 @@ export default function UserMenu() {
   const initials = user
     ? `${user.first_name[0] ?? ""}${user.last_name[0] ?? ""}`.toUpperCase()
     : "";
+  const router = useRouter();
 
   if (!user) return null;
 
@@ -78,7 +80,10 @@ export default function UserMenu() {
               variant="ghost"
               className="w-full justify-start gap-2 text-red-600 hover:text-red-700
                          cursor-pointer"
-              onClick={logout}
+              onClick={() => {
+                logout();
+                router.replace("/login");
+              }}
             >
               <LogOut size={16} />
                 Log Out

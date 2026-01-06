@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Settings, Bell, Shield, User2, Link } from "lucide-react";
 import { useAuth } from "@/lib/store/auth";
+import { useRouter } from "next/navigation";
 // import languages from './languages.json';
 
 const languages = [
@@ -34,6 +35,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const [theme, setTheme] = useState("system");
   const [language, setLanguage] = useState("auto");
   const { logout } = useAuth();
+  const router = useRouter();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -124,7 +126,10 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                     <span>Log out of this device</span>
                     <Button
 		                  variant="outline"
-                      onClick={logout}
+                      onClick={() => {
+                        logout();
+                        router.replace("/login");
+                      }}
                       className="cursor-pointer"
                     >
                       Log out

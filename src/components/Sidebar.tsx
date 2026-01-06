@@ -16,7 +16,6 @@ import { useMutation } from "@tanstack/react-query";
 import { mutationFn } from "@/lib/mutationFn";
 import { queryClient } from "@/lib/queryClient";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
-import { DeleteAssessmentDialog } from "./DeleteAssessmentDialog";
 
 export default function Sidebar() {
   const {  data: user } = useUser();
@@ -26,8 +25,6 @@ export default function Sidebar() {
   const [isPending, startTransition] = useTransition();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState("");
-  const [deletingId, setDeletingId] = useState<string>("");
-  const [deleteAssessmentOpen, setDeleteAssessmentOpen] = useState(false);
 
   const router = useRouter();
 
@@ -50,8 +47,10 @@ export default function Sidebar() {
       setEditingId(assessmentId);
       setEditingTitle(title);
     } else if (option === "Delete") {
-      setDeletingId(assessmentId);
-      setDeleteAssessmentOpen(true);
+      updateAssessmentMutation.mutateAsync({
+        url: `/assessment/${assessmentId}`,
+        method: "DELETE",
+      });
     }
 
     console.log(`Action: ${option}, Assessment ID: ${assessmentId}`);
@@ -196,11 +195,6 @@ export default function Sidebar() {
       <NewAssessmentDialog
         open={newAssessmentsOpen}
         onOpenChange={setNewAssessmentsOpen}
-      />
-      <DeleteAssessmentDialog
-        open={deleteAssessmentOpen}
-        onOpenChange={setDeleteAssessmentOpen}
-        assessmentId={deletingId}
       />
       {isPending ? <PageLoader /> : null}
     </aside>

@@ -1,6 +1,6 @@
 "use client";
 
-import { AudioLines, Check, Mic, Paperclip, Send, X } from "lucide-react";
+import { AudioLines, Check, Mic, Paperclip, Send, X, ListChecks } from "lucide-react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -10,6 +10,8 @@ import { mutationFn } from "@/lib/mutationFn";
 import { VoiceAgentDialog } from "./VoiceAgentPopover";
 import FilePreviewWrapper from "./FilePreviewWrapper";
 import { useMutation } from "@tanstack/react-query";
+import { Popover, PopoverTrigger } from "./ui/popover";
+import { InstructionsPopover } from "./InstructionsPopover";
 
 export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
   const [files, setFiles] = useState<File[]>([]);
@@ -197,6 +199,11 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
     });
   };
 
+  const handleQuickInstructions = useCallback((instructions: string[]) => {
+    console.log("Quick instructions selected:", instructions);
+    // You can process quick instructions here if needed
+  }, []);
+
   const handleSend = async () => {
     // if (!message.trim()) return;
     action(message, fileIds);
@@ -273,18 +280,30 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
         }
 
         <div className="flex items-center justify-between">
-          <label className="inline-flex items-center gap-1 border px-1.5 py-1 rounded-xl cursor-pointer text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-          >
-            <Paperclip className="w-4 h-4" />
-            <span className="text-sm">Attach</span>
-            <input
-              type="file"
-              multiple
-              accept="image/*,application/pdf"
-              className="hidden"
-              onChange={handleFileChange}
-            />
-          </label>
+          <div className="flex items-center gap-1">
+            <label className="inline-flex items-center gap-1 border px-1.5 py-1 rounded-xl cursor-pointer text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              <Paperclip className="w-4 h-4" />
+              <span className="text-sm">Attach</span>
+              <input
+                type="file"
+                multiple
+                accept="image/*,application/pdf"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+            </label>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="inline-flex items-center gap-1 border px-1.5 py-1 rounded-xl cursor-pointer text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors">
+                  <ListChecks className="w-4 h-4" />
+                  <span className="text-sm">Instructions</span>
+                </button>
+              </PopoverTrigger>
+              <InstructionsPopover action={handleQuickInstructions} />
+            </Popover>
+          </div>
 
           <div className="flex gap-2 items-center">
             {!isRecording ? (

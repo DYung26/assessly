@@ -19,6 +19,7 @@ import { useMutation } from "@tanstack/react-query";
 import { mutationFn } from "@/lib/mutationFn";
 import { toast } from "sonner";
 import { ThreeDotLoader } from "./ui/three-dot-loader";
+import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { OtpDialog } from "./OtpDialog";
 
@@ -39,10 +40,13 @@ type SignupSchema = z.infer<typeof signupSchema>;
 
 export default function SignupForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [otpDialogOpen, setOtpDialogOpen] = useState(false);
   const [emailForOtp, setEmailForOtp] = useState("");
 
   const form = useForm<SignupSchema>({
+    mode: "onChange",
     resolver: zodResolver(signupSchema),
     defaultValues: {
       email: "",
@@ -156,12 +160,24 @@ export default function SignupForm() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="••••••••"
-                    {...field}
-                    disabled={isSubmitting}
-                  />
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      {...field}
+                      disabled={isSubmitting}
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-2 flex items-center px-2 cursor-pointer"
+                      onClick={() => setShowPassword((s) => !s)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      tabIndex={-1}
+                    >
+{showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -175,12 +191,24 @@ export default function SignupForm() {
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <Input 
-                    type="password"
-                    placeholder="••••••••"
-                    {...field}
-                    disabled={isSubmitting}
-                  />
+                  <div className="relative">
+                    <Input 
+                      type={showConfirmPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      {...field}
+                      disabled={isSubmitting}
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-2 flex items-center px-2 cursor-pointer"
+                      onClick={() => setShowConfirmPassword((s) => !s)}
+                      aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                      tabIndex={-1}
+                    >
+{showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                    </button>
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>

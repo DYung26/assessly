@@ -25,7 +25,6 @@ export default function Assessment({ params }: PageProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {setPendingMessage, setPendingInstructions, setPendingFileIds} = useChatStore();
   const [instructions, setInstructions] = useState<string[]>([]);
-  const [markingScheme, setMarkingScheme] = useState<string[]>([]);
   const router = useRouter();
 
   const newChatMutation = useMutation({
@@ -43,9 +42,8 @@ export default function Assessment({ params }: PageProps) {
   });
 
   const handleContext = useCallback((
-    markingScheme: string = "", instructions: string[] = []
+    instructions: string[] = []
   ) => {
-    if (markingScheme) setMarkingScheme(prev => [...prev, markingScheme]);
     if (instructions.length > 0)
       setInstructions(prev => [...prev, ...instructions]);
   }, []);
@@ -56,12 +54,9 @@ export default function Assessment({ params }: PageProps) {
       instructions.length === 0
       // files.length === 0
     ) return;
-    //  && markingScheme.length === 0
 
     const initialMessage = userText + instructions.map(inst => `\n_- ${inst}_`).join('');
     console.log("Initial Message: ", initialMessage);
-
-    fileIds.push(...markingScheme);
 
     newChatMutation.mutateAsync({
       url: "/chat",

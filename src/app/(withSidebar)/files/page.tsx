@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useUser } from "@/lib/hooks/useUser";
 import axiosInstance from "@/lib/axiosInstance";
 import dynamic from "next/dynamic";
+import { formatDateTime } from "@/lib/utils";
 
 const FilePreview = dynamic(() => import("reactjs-file-preview"), {
   ssr: false,
@@ -79,7 +80,7 @@ export default function FilesPage() {
                       )}
                     </div>
                     <p className="mt-1 text-xs text-gray-400">
-                      Uploaded {new Date(file.uploaded_at).toLocaleDateString()}
+                      Uploaded {formatDateTime(file.uploaded_at)}
                     </p>
                   </div>
 

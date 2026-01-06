@@ -16,6 +16,7 @@ import { useMutation } from "@tanstack/react-query";
 import { mutationFn } from "@/lib/mutationFn";
 import { queryClient } from "@/lib/queryClient";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import { formatDateTime } from "@/lib/utils";
 
 export default function Sidebar() {
   const {  data: user } = useUser();
@@ -183,7 +184,7 @@ export default function Sidebar() {
                         ))*/}
                       </div>
                       <p className="text-[10px] text-gray-400">
-                        {a.created_at}
+                        {formatDateTime(a.created_at)}
                       </p>
                     </div>
                   )}

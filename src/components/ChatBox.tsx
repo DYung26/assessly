@@ -12,6 +12,7 @@ import FilePreviewWrapper from "./FilePreviewWrapper";
 import { useMutation } from "@tanstack/react-query";
 import { Popover, PopoverTrigger } from "./ui/popover";
 import { InstructionsPopover } from "./InstructionsPopover";
+import { APP_CONFIG } from "@/lib/config";
 
 export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
   const [files, setFiles] = useState<File[]>([]);
@@ -288,7 +289,7 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
               <input
                 type="file"
                 multiple
-                accept="image/*,application/pdf"
+                accept={APP_CONFIG.ACCEPTED_FILE_TYPES}
                 className="hidden"
                 onChange={handleFileChange}
               />

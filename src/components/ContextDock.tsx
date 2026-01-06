@@ -26,7 +26,7 @@ export default function ContextDock ({ action }: ContextDockProps) {
       >
         <div className="flex flex-col text-left">
           <span className="text-sm font-medium">Upload marking scheme</span>
-          <span className="text-xs text-gray-500">PDF, DOCX</span>
+          <span className="text-xs text-gray-500">Supported documents & code files</span>
         </div>
 
         <div className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full">

@@ -15,6 +15,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { mutationFn } from "@/lib/mutationFn";
 import { queryClient } from "@/lib/queryClient";
 import axiosInstance from "@/lib/axiosInstance";
+import { APP_CONFIG } from "@/lib/config";
 
 const FilePreview = dynamic(() => import("reactjs-file-preview"), {
   ssr: false,
@@ -206,6 +207,7 @@ export default function MarkingSchemeModal({
             <input
               type="file"
               multiple
+              accept={APP_CONFIG.ACCEPTED_FILE_TYPES}
               className="hidden"
               onChange={handleFileChange}
               disabled={isUploading}

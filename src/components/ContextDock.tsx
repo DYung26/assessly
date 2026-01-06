@@ -38,7 +38,7 @@ export default function ContextDock ({ action }: ContextDockProps) {
         className="flex-1 flex justify-between items-center p-3 bg-white hover:bg-gray-100 border border-gray-300 rounded-lg shadow-sm cursor-pointer text-black"
       >
         <div className="flex flex-col text-left">
-          <span className="text-sm font-medium">Add instructions</span>
+          <span className="text-sm font-medium">Add instructions manually</span>
           <span className="text-xs text-gray-500">Tailor the way Aslyn responds to this assessment</span>
         </div>
         <div className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full">

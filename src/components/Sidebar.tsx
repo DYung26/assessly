@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { CircleChevronLeft, CircleChevronRight, Plus, Search, Folder, Ellipsis, Bot } from "lucide-react";
+import { CircleChevronLeft, CircleChevronRight, Plus, Search, Folder, Ellipsis, Bot, Files } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { Button } from "./ui/button";
 import clsx from "clsx";
@@ -102,6 +102,19 @@ export default function Sidebar() {
         <Button variant="ghost" className="w-full justify-start cursor-pointer p-1 border-t border-b !bg-gray-100">
           <Search size={18} className="mr-2" />
           {expanded && "Search Assessments"}
+        </Button>
+
+        <Button
+          variant="ghost"
+          onClick={() => {
+            startTransition(() => {
+              router.push("/files");
+            });
+          }}
+          className="w-full justify-start cursor-pointer p-1 border-b"
+        >
+          <Files size={18} className="mr-2" />
+          {expanded && "My Files"}
         </Button>
 
         <TooltipProvider>

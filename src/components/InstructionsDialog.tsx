@@ -7,14 +7,14 @@ import { APP_CONFIG } from "@/lib/config";
 interface InstructionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (instructions: string) => void;
+  onSave: (customInstruction: string) => void;
 }
 
 export function InstructionsDialog({ open, onOpenChange, onSave }: InstructionDialogProps) {
-  const [instructions, setInstructions] = useState("");
+  const [customInstruction, setCustomInstruction] = useState("");
 
   const handleSave = () => {
-    onSave(instructions);
+    onSave(customInstruction);
     onOpenChange(false);
   };
 
@@ -22,17 +22,17 @@ export function InstructionsDialog({ open, onOpenChange, onSave }: InstructionDi
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Add Instructions Manually</DialogTitle>
+          <DialogTitle>Add Custom Instructions</DialogTitle>
           <DialogDescription>
             Tailor the way {APP_CONFIG.ASSISTANT_NAME} responds to this assessment
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <Textarea
-            placeholder="Type your instructions here..."
+            placeholder="Type your customInstruction here..."
             className="min-h-[150px] resize-none"
-            value={instructions}
-            onChange={(e) => setInstructions(e.target.value)}
+            value={customInstruction}
+            onChange={(e) => setCustomInstruction(e.target.value)}
           />
           <div className="flex justify-end gap-2">
             <Button 

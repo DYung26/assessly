@@ -47,11 +47,7 @@ export type FileType = {
 }
 
 export type ChatPromptBoxProps = {
-  action: (msg: string, fileIds: string[]) => void;
-};
-
-export type ContextDockProps = {
-  action: (instructions?: string[]) => void;
+  action: (msg: string, fileIds: string[], instructions: string[]) => void;
 };
 
 export type InstructionsPopoverProps = {

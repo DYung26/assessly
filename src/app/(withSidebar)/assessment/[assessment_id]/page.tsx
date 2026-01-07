@@ -12,7 +12,7 @@ import { queryClient } from "@/lib/queryClient";
 import { useChatStore } from "@/lib/store/chat";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { use, useCallback, useState } from "react";
+import { use, useState } from "react";
 
 type PageProps = {
   params: Promise<{ assessment_id: string }>;
@@ -24,7 +24,6 @@ export default function Assessment({ params }: PageProps) {
   const { data: chats = [] } = useAssessmentChats(assessment_id as string);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {setPendingMessage, setPendingInstructions, setPendingFileIds} = useChatStore();
-  const [instructions, setInstructions] = useState<string[]>([]);
   const router = useRouter();
 
   const newChatMutation = useMutation({
@@ -41,18 +40,13 @@ export default function Assessment({ params }: PageProps) {
     },
   });
 
-  const handleContext = useCallback((
+  const handleSend = async (
+    userText: string = "", fileIds: string[] = [],
     instructions: string[] = []
   ) => {
-    if (instructions.length > 0)
-      setInstructions(prev => [...prev, ...instructions]);
-  }, []);
-
-  const handleSend = async (userText: string, fileIds: string[]) => {
     if (
       userText.trim().length === 0 &&
-      instructions.length === 0
-      // files.length === 0
+      fileIds.length === 0
     ) return;
 
     const initialMessage = userText + instructions.map(inst => `\n_- ${inst}_`).join('');
@@ -82,7 +76,7 @@ export default function Assessment({ params }: PageProps) {
           <TypingHeader />
           <ChatPromptBox action={handleSend} />
           {/*action={() => { }} />*/}
-          <ContextDock action={handleContext} />
+          <ContextDock />
           <ChatsList chats={chats} />
         </main>
       }

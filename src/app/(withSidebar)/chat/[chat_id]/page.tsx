@@ -75,7 +75,7 @@ export default function Chat({ params }: PageProps) {
   );
 
   useEffect(() => {
-    if (pendingMessage && !hasRunRef.current) {
+    if ((pendingMessage || pendingFileIds) && !hasRunRef.current) {
       handleSend(
         pendingMessage as string, pendingFileIds as string[], pendingInstructions as string[]
       );

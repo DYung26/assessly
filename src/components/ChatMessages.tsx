@@ -63,7 +63,8 @@ export default function ChatMessages({
                 : ""
                 }`}
             >
-              {msg.file_ids &&
+              {
+                msg.file_ids &&
                 msg.role === RoleEnum.USER &&
                 msg.file_ids.map((fileId: string) => (
                   <MessageFilePreview key={fileId} fileId={fileId} />

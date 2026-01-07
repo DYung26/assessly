@@ -17,7 +17,7 @@ import { APP_CONFIG } from "@/lib/config";
 export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [fileIds, setFileIds] = useState<string[]>([]);
-  // const [uploadStates, setUploadStates] = useState<Record<string, boolean>>({});
+  const [instructions, setInstructions] = useState<string[]>([]);
   const [uploads, setUploads] = useState<
     { file: File; isPending: boolean; id?: string }[]
   >([]);
@@ -202,12 +202,12 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
 
   const handleQuickInstructions = useCallback((instructions: string[]) => {
     console.log("Quick instructions selected:", instructions);
-    // You can process quick instructions here if needed
+    setInstructions(instructions);
   }, []);
 
   const handleSend = async () => {
     // if (!message.trim()) return;
-    action(message, fileIds);
+    action(message, fileIds, instructions);
     setMessage("");
     setFiles([]);
   };
@@ -327,7 +327,8 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
 
                 <Button
                   onClick={handleSend}
-                  className="p-1 rounded-full bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
+                  disabled={!message.trim() && uploads.length === 0}
+                  className="p-1 rounded-full bg-blue-600 text-white hover:bg-blue-700 cursor-pointer disabled:bg-blue-300 disabled:cursor-not-allowed disabled:hover:bg-blue-300"
                 >
                   <Send className="w-4 h-4" />
                 </Button>

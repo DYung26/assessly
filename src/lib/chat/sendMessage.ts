@@ -5,7 +5,7 @@ import { mutationFn } from "@/lib/mutationFn";
 type SendMessageArgs = {
   chatId?: string;
   assessmentId?: string;
-  userText: string;
+  userText?: string;
   instructions?: string[];
   fileIds: string[];
   onUserMessage: (msg: Message) => void;
@@ -34,7 +34,7 @@ export async function sendMessage({
     chat_id: chatId,
     file_ids: fileIds ?? [],
     role: RoleEnum.USER,
-    content: userText,
+    content: userText ?? "",
 
     created_at: new Date().toISOString(),
   });
@@ -58,7 +58,7 @@ export async function sendMessage({
         // assessment_id: assessmentId ?? null,
         chat_id: chatId,
         file_ids: fileIds ?? [],
-        content: userText,
+        content: userText ?? "",
         instructions: instructions ?? [],
       },
       isStream: true,

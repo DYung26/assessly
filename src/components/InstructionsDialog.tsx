@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
@@ -8,10 +8,17 @@ interface InstructionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSave: (customInstruction: string) => void;
+  initialValue?: string;
 }
 
-export function InstructionsDialog({ open, onOpenChange, onSave }: InstructionDialogProps) {
-  const [customInstruction, setCustomInstruction] = useState("");
+export function InstructionsDialog({ open, onOpenChange, onSave, initialValue = "" }: InstructionDialogProps) {
+  const [customInstruction, setCustomInstruction] = useState(initialValue);
+
+  useEffect(() => {
+    if (open) {
+      setCustomInstruction(initialValue);
+    }
+  }, [open, initialValue]);
 
   const handleSave = () => {
     onSave(customInstruction);
@@ -29,7 +36,7 @@ export function InstructionsDialog({ open, onOpenChange, onSave }: InstructionDi
         </DialogHeader>
         <div className="space-y-4">
           <Textarea
-            placeholder="Type your customInstruction here..."
+            placeholder="Type your custom instruction here..."
             className="min-h-[150px] resize-none"
             value={customInstruction}
             onChange={(e) => setCustomInstruction(e.target.value)}

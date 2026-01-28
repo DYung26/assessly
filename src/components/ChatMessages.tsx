@@ -9,6 +9,7 @@ import { ThreeDotLoader } from "./ui/three-dot-loader";
 import dynamic from "next/dynamic";
 import CopyButton from "./CopyButton";
 import ReadAloud from "./ReadAloud";
+import DownloadButton from "./DownloadButton";
 
 const FilePreview = dynamic(() => import("reactjs-file-preview"), {
   ssr: false,
@@ -82,6 +83,10 @@ export default function ChatMessages({
             {!isStreaming &&
               <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
                   <CopyButton
+                    htmlContent={content}
+                    rawText={converted}
+                  />
+                  <DownloadButton
                     htmlContent={content}
                     rawText={converted}
                   />

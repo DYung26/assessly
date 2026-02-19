@@ -3,7 +3,16 @@ export type User = {
   email: string;
   first_name: string;
   last_name: string;
+  oauth_providers?: OAuthProvider[];
 }
+
+export type OAuthProvider = {
+  id: string;
+  provider_name: string;
+  provider_user_id: string;
+  created_at: string;
+  updated_at: string;
+};
 
 export type Message = {
   id: string;

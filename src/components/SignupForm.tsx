@@ -22,6 +22,7 @@ import { ThreeDotLoader } from "./ui/three-dot-loader";
 import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 import { OtpDialog } from "./OtpDialog";
+import { GoogleSignInButton } from "./GoogleSignInButton";
 
 const signupSchema = z
   .object({
@@ -93,6 +94,16 @@ export default function SignupForm() {
   return (
     <div className="mt-10 p-4">
       <h2 className="text-4xl font-bold mb-4 text-center">Create an account</h2>
+
+      <GoogleSignInButton isSubmitting={isSubmitting} />
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-muted"></div>
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-white px-2 text-muted-foreground">Or sign up with email</span>
+        </div>
+      </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

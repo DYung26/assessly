@@ -196,13 +196,13 @@ export default function Sidebar() {
                   </button>
                   
                   {expanded && (
-                    <div className="flex items-center justify-center w-12 h-8 flex-shrink-0 relative">
+                    <div className="flex items-center justify-center w-14 h-8 flex-shrink-0 relative">
                       <span className="absolute inset-0 flex items-center justify-center text-[10px] text-gray-400 group-hover:opacity-0 transition-opacity whitespace-nowrap">
                         {formatDateTime(a.created_at)}
                       </span>
                       <Popover>
                         <PopoverTrigger asChild>
-                          <button 
+                          <button
                             className="absolute inset-0 opacity-0 group-hover:opacity-100 flex items-center justify-center rounded-full hover:bg-gray-200 transition-opacity cursor-pointer"
                             onClick={(e) => e.stopPropagation()}
                           >

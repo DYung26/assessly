@@ -7,7 +7,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Settings, Bell, Shield, User2, Link } from "lucide-react";
 import { useAuth } from "@/lib/store/auth";
 import { useRouter } from "next/navigation";
-// import languages from './languages.json';
+import { ConnectedApps } from "./ConnectedApps";
 
 const languages = [
   { value: "auto", label: "Auto-detect" },
@@ -107,10 +107,9 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
             )}
 
             {activeTab === "apps" && (
-              <>
-                <p className="text-sm text-muted-foreground">Manage connected third-party applications here.</p>
-                <Button variant="outline" className="cursor-pointer">Connect Google</Button>
-              </>
+              <ConnectedApps onProviderStatusChange={() => {
+                // Provider status changed, could trigger a user data refresh if needed
+              }} />
             )}
 
             {activeTab === "security" && (

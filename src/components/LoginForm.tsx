@@ -18,10 +18,11 @@ import { mutationFn } from "@/lib/mutationFn";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ThreeDotLoader } from "./ui/three-dot-loader";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/lib/store/auth";
+import { GoogleSignInButton } from "./GoogleSignInButton";
 
 const loginSchema = z.object({
   email: z.email({ message: "Invalid email address" }),
@@ -35,10 +36,6 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
 
   const { login } = useAuth();
-
-  useEffect(() => {
-    console.log("isSubmitting updated:", isSubmitting);
-  }, [isSubmitting]);
 
   const form = useForm<LoginSchema>({
     mode: "onChange",
@@ -81,6 +78,15 @@ export default function LoginForm() {
   return (
     <div className="mt-10 p-4">
       <h2 className="text-4xl font-bold mb-4 text-center">Welcome back</h2>
+      <GoogleSignInButton isSubmitting={isSubmitting} />
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-muted"></div>
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-white px-2 text-muted-foreground">Or continue with email</span>
+        </div>
+      </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <FormField

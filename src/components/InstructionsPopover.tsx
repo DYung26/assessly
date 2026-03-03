@@ -8,6 +8,7 @@ export function InstructionsPopover({ action }: InstructionsPopoverProps) {
     "Mark and grade script",
     "Grade as absolute score and %",
     "Write detailed analysis",
+    "Create a report",
   ];
 
   const [selected, setSelected] = useState<string[]>([]);

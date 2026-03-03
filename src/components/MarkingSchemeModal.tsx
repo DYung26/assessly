@@ -96,7 +96,7 @@ export default function MarkingSchemeModal({
     queryFn: async () => {
       const res = await axiosInstance.get(`/assessment/${assessmentId}/files`);
       // Extract files from nested response: res.data.data.files
-      return res.data.data.files as MarkingSchemeFile[];
+      return res.data.data.items as MarkingSchemeFile[];
     },
     enabled: open && !!assessmentId,
   });

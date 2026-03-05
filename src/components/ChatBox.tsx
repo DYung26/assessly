@@ -3,7 +3,7 @@
 import { AudioLines, Check, Mic, Paperclip, Send, X, ListChecks } from "lucide-react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 // import Image from "next/image";
 import { ChatPromptBoxProps } from "@/types";
 import { mutationFn } from "@/lib/mutationFn";
@@ -12,6 +12,7 @@ import FilePreviewWrapper from "./FilePreviewWrapper";
 import { useMutation } from "@tanstack/react-query";
 import { Popover, PopoverTrigger } from "./ui/popover";
 import { InstructionsPopover } from "./InstructionsPopover";
+import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 import { APP_CONFIG } from "@/lib/config";
 
 export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
@@ -150,8 +151,12 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
       // setUploadStates((prev) => ({ ...prev, [fileName]: false }));
       setFileIds(prev => [...prev, data.data.id]);
     },
-    onError: (error) => {
+    onError: (error, variables) => {
       console.error("[FPW] File upload failed:", error);
+      const { file } = variables;
+      setUploads((prev) =>
+        prev.map((u) => (u.file.name === file.name ? { ...u, isPending: false } : u))
+      );
     },
   });
 
@@ -204,6 +209,12 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
     console.log("Quick instructions selected:", instructions);
     setInstructions(instructions);
   }, []);
+
+  // Derive state: check if any file is currently uploading
+  const isUploadingFiles = useMemo(
+    () => uploads.some((u) => u.isPending),
+    [uploads]
+  );
 
   const handleSend = async () => {
     // if (!message.trim()) return;
@@ -325,13 +336,22 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
                   <AudioLines />
                 </Button>
 
-                <Button
-                  onClick={handleSend}
-                  disabled={!message.trim() && uploads.length === 0}
-                  className="p-1 rounded-full bg-blue-600 text-white hover:bg-blue-700 cursor-pointer disabled:bg-blue-300 disabled:cursor-not-allowed disabled:hover:bg-blue-300"
-                >
-                  <Send className="w-4 h-4" />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span>
+                      <Button
+                        onClick={handleSend}
+                        disabled={(!message.trim() && uploads.length === 0) || isUploadingFiles}
+                        className="p-1 rounded-full bg-blue-600 text-white hover:bg-blue-700 cursor-pointer disabled:bg-blue-300 disabled:cursor-not-allowed disabled:hover:bg-blue-300"
+                      >
+                        <Send className="w-4 h-4" />
+                      </Button>
+                    </span>
+                  </TooltipTrigger>
+                  {isUploadingFiles && (
+                    <TooltipContent>File upload pending</TooltipContent>
+                  )}
+                </Tooltip>
               </>
             ) : (
               <>

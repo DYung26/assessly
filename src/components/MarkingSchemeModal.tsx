@@ -11,10 +11,9 @@ import {
 } from "./ui/dialog";
 import { Button } from "./ui/button";
 import dynamic from "next/dynamic";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { mutationFn } from "@/lib/mutationFn";
 import { queryClient } from "@/lib/queryClient";
-import axiosInstance from "@/lib/axiosInstance";
 import { APP_CONFIG } from "@/lib/config";
 
 const FilePreview = dynamic(() => import("reactjs-file-preview"), {
@@ -32,6 +31,7 @@ interface MarkingSchemeModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   assessmentId: string;
+  filesData?: MarkingSchemeFile[];
 }
 
 const MarkingSchemeFilePreview = memo(function MarkingSchemeFilePreview({
@@ -88,18 +88,9 @@ export default function MarkingSchemeModal({
   open,
   onOpenChange,
   assessmentId,
+  filesData,
 }: MarkingSchemeModalProps) {
   const [isUploading, setIsUploading] = useState(false);
-
-  const { data: filesData, isLoading } = useQuery({
-    queryKey: ["assessment-files", assessmentId],
-    queryFn: async () => {
-      const res = await axiosInstance.get(`/assessment/${assessmentId}/files`);
-      // Extract files from nested response: res.data.data.files
-      return res.data.data.items as MarkingSchemeFile[];
-    },
-    enabled: open && !!assessmentId,
-  });
 
   const uploadMutation = useMutation({
     mutationFn: mutationFn,
@@ -147,8 +138,6 @@ export default function MarkingSchemeModal({
     );
   };
 
-  const files = filesData || [];
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
@@ -160,13 +149,13 @@ export default function MarkingSchemeModal({
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto">
-          {isLoading ? (
+          {!filesData ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
             </div>
-          ) : files.length > 0 ? (
+          ) : filesData.length > 0 ? (
             <div className="flex flex-wrap gap-2 p-2">
-              {files.map((file) => (
+              {filesData.map((file) => (
                 <MarkingSchemeFilePreview
                   key={file.id}
                   file={file}

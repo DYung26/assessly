@@ -21,7 +21,7 @@ export default function ContextDock () {
     queryKey: ["assessment-files", assessmentId],
     queryFn: async () => {
       const res = await axiosInstance.get(`/assessment/${assessmentId}/files`);
-      return res.data.data.files || [];
+      return res.data.data.items || [];
     },
     enabled: !!assessmentId,
   });
@@ -108,6 +108,7 @@ export default function ContextDock () {
         open={markingSchemeModalOpen}
         onOpenChange={setMarkingSchemeModalOpen}
         assessmentId={assessmentId}
+        filesData={filesData}
       />
 
       <InstructionsDialog

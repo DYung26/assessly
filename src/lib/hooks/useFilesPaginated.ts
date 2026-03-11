@@ -6,6 +6,7 @@ interface UserFile {
   filename: string;
   filetype: string;
   uploaded_at: string;
+  url?: string;
   download_url: string;
 }
 

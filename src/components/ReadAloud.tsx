@@ -14,7 +14,7 @@ export default function ReadAloud({ text }: { text: string }) {
     mutationFn: mutationFn,
     onMutate: () => setIsLoading(true),
     onSuccess: (data) => {
-      const url = data.data.download_url;
+      const url = data.data.url || data.data.download_url;
       console.log("Received signed URL:", url);
 
       if (audioRef.current) {

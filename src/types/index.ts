@@ -52,6 +52,7 @@ export type FileType = {
   filename: string;
   ai_file_id: string;
   uploaded_at: string;
+  url?: string;
   download_url: string;
 }
 

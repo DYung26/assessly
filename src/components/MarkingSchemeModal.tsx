@@ -23,6 +23,7 @@ const FilePreview = dynamic(() => import("reactjs-file-preview"), {
 interface MarkingSchemeFile {
   id: string;
   filename: string;
+  url?: string;
   download_url: string;
   uploaded_at: string;
 }
@@ -71,7 +72,7 @@ const MarkingSchemeFilePreview = memo(function MarkingSchemeFilePreview({
             <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
           </div>
         )}
-        <FilePreview preview={file.download_url} />
+        <FilePreview preview={file.url || file.download_url} />
       </div>
       <button
         onClick={handleRemove}

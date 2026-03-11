@@ -107,7 +107,7 @@ export default function ChatMessages({
 const MessageFilePreview = memo(function MessageFilePreview({ fileId }: { fileId: string }) {
   console.log("MessageFilePreview", fileId);
   const { data: file, isLoading } = useFiles(fileId);
-  const url = file?.download_url;
+  const url = file?.url || file?.download_url;
 
   if (isLoading) {
     return <div className="w-32 h-32 bg-gray-200 animate-pulse rounded-xl mb-2" />;

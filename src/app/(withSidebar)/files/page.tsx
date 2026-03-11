@@ -62,7 +62,7 @@ export default function FilesPage() {
                     className="flex flex-col bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition overflow-hidden"
                   >
                     <div className="relative w-full aspect-square border-b border-gray-200 bg-gray-50 flex items-center justify-center overflow-hidden">
-                      <FilePreview preview={file.download_url} />
+                      <FilePreview preview={file.url || file.download_url} />
                     </div>
 
                     <div className="flex-1 flex flex-col p-4">

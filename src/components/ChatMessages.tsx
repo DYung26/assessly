@@ -50,9 +50,11 @@ export default function ChatMessages({
     <div className="flex flex-col w-full max-w-3xl py-2 px-2 space-y-4 overflow-y-auto">
       {messages.map((msg) => {
         const isStreaming = msg.id === streamingMessageId;
+        console.log("Content passed to formatter:", isStreaming ? streamingContent : msg.content);
         const { html: content, converted } = isStreaming
           ? formatStreamingContent(streamingContent)
           : formatStreamingContent(msg.content);
+        console.log("Formatted content:", content);
 
         const isUser = msg.role === RoleEnum.USER;
         return (
@@ -77,7 +79,10 @@ export default function ChatMessages({
                   <ThreeDotLoader className="bg-black" />
                 </div>
               ) : (
-                <div dangerouslySetInnerHTML={{ __html: content }} />
+                <div
+                  className="markdown-body"
+                  dangerouslySetInnerHTML={{ __html: content }}
+                />
               )}
             </div>
             {!isStreaming &&

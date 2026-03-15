@@ -11,6 +11,7 @@ const md = new MarkdownIt({
   html: true,
   linkify: true,
   typographer: true,
+  breaks: true,
   highlight: function (str: string, lang: string): string {
     let languageLabel = "";
     if (lang && hljs.getLanguage(lang)) {
@@ -31,14 +32,12 @@ const md = new MarkdownIt({
   });
 
 export function formatStreamingContent(
-    raw: string
-): { html: string, converted: string } {
+  raw: string
+): { html: string; converted: string } {
   if (!raw) return { html: "", converted: "" };
 
   const converted = convertBracketsToDollars(raw);
-
   const htmlFromMd = md.render(converted);
-
   const html = renderKatexInHtml(htmlFromMd);
 
   return { html, converted };
@@ -51,32 +50,32 @@ function convertBracketsToDollars(text: string) {
 }
 
 function renderKatexInHtml(html: string): string {
-  const containerStart = `<div class="math-container">`;
-  const containerEnd = `</div>`;
-
   html = html.replace(/\$\$(.+?)\$\$/gs, (_, math) => {
     try {
-      return katex.renderToString(
-        math.trim(), { displayMode: false, throwOnError: false, strict: false }
-      );
+      return katex.renderToString(math.trim(), {
+        displayMode: true,
+        throwOnError: false,
+        strict: false,
+      });
     } catch {
       return _;
     }
   });
 
-  // Render inline math $...$ (use displayMode: false)
   html = html.replace(/\$(.+?)\$/gs, (_, math) => {
     if (math.trim() === '') return _;
     try {
-      return katex.renderToString(
-        math.trim(), { displayMode: false, throwOnError: false, strict: false }
-      );
+      return katex.renderToString(math.trim(), {
+        displayMode: false,
+        throwOnError: false,
+        strict: false,
+      });
     } catch {
       return _;
     }
   });
 
-  return containerStart + html + containerEnd;
+  return `<div class="math-container">${html}</div>`;
 }
 
 /*

@@ -64,12 +64,12 @@ export default function ChatMessages({
                 : ""
                 }`}
             >
-              {
-                msg.file_ids &&
-                msg.role === RoleEnum.USER &&
-                msg.file_ids.map((fileId: string) => (
-                  <MessageFilePreview key={fileId} fileId={fileId} />
-                )
+              {msg.file_ids && msg.role === RoleEnum.USER && (
+                <div className="flex flex-wrap justify-center items-center gap-3 mb-2 w-full">
+                  {msg.file_ids.map((fileId: string) => (
+                    <MessageFilePreview key={fileId} fileId={fileId} />
+                  ))}
+                </div>
               )}
 
               {isStreaming && !streamingContent ? (
@@ -110,20 +110,12 @@ const MessageFilePreview = memo(function MessageFilePreview({ fileId }: { fileId
   const url = file?.url || file?.download_url;
 
   if (isLoading) {
-    return <div className="w-32 h-32 bg-gray-200 animate-pulse rounded-xl mb-2" />;
+    return <div className="w-32 h-32 bg-gray-200 animate-pulse rounded-xl" />;
   }
 
   return (
-    <div className="flex items-center justify-center w-40 h-40 rounded-xl bg-gray-100">
+    <div className="border shadow flex items-center justify-center w-40 h-40 rounded-xl bg-gray-100 flex-shrink-0">
       <FilePreview preview={url || ""} />
-      {/*className="max-w-full max-h-full object-contain"*/}
     </div>
-    /*<div className="mb-2">
-      <img
-        src={url}
-        alt="file thumbnail"
-        className="max-w-[200px] rounded-lg shadow"
-      />
-    </div>*/
   );
 });

@@ -5,15 +5,10 @@ import { Message, RoleEnum } from "@/types";
 import { formatStreamingContent } from "@/lib/utils/textFormat";
 import { useFiles } from "@/lib/hooks/useFiles";
 import { ThreeDotLoader } from "./ui/three-dot-loader";
-// import FilePreview from "reactjs-file-preview";
-import dynamic from "next/dynamic";
 import CopyButton from "./CopyButton";
 import ReadAloud from "./ReadAloud";
 import DownloadButton from "./DownloadButton";
-
-const FilePreview = dynamic(() => import("reactjs-file-preview"), {
-  ssr: false,
-});
+import FilePreview from "reactjs-file-preview";
 
 export default function ChatMessages({
   messages,
@@ -50,11 +45,9 @@ export default function ChatMessages({
     <div className="flex flex-col w-full max-w-3xl py-2 px-2 space-y-4 overflow-y-auto">
       {messages.map((msg) => {
         const isStreaming = msg.id === streamingMessageId;
-        console.log("Content passed to formatter:", isStreaming ? streamingContent : msg.content);
         const { html: content, converted } = isStreaming
           ? formatStreamingContent(streamingContent)
           : formatStreamingContent(msg.content);
-        console.log("Formatted content:", content);
 
         const isUser = msg.role === RoleEnum.USER;
         return (
@@ -115,12 +108,18 @@ const MessageFilePreview = memo(function MessageFilePreview({ fileId }: { fileId
   const url = file?.url || file?.download_url;
 
   if (isLoading) {
-    return <div className="w-32 h-32 bg-gray-200 animate-pulse rounded-xl" />;
+    return (
+      <div className="w-40 h-40 rounded-xl bg-gray-100 flex-shrink-0 border shadow animate-pulse" />
+    );
+  }
+
+  if (!url) {
+    return null;
   }
 
   return (
-    <div className="border shadow flex items-center justify-center w-40 h-40 rounded-xl bg-gray-100 flex-shrink-0">
-      <FilePreview preview={url || ""} />
+    <div className="w-40 h-40 rounded-xl bg-white flex-shrink-0 border shadow overflow-hidden">
+      <FilePreview preview={url} />
     </div>
   );
 });

@@ -108,7 +108,7 @@ export default function Sidebar() {
           {expanded && "Search Assessments"}
         </Button>
 
-        <Button
+        {/* <Button
           variant="ghost"
           onClick={() => {
             startTransition(() => {
@@ -119,7 +119,7 @@ export default function Sidebar() {
         >
           <Files size={20} className="mr-2" />
           {expanded && "My Files"}
-        </Button>
+        </Button> */}
 
         <TooltipProvider>
           <Tooltip>

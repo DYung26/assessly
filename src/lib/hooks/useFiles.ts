@@ -10,7 +10,10 @@ export function useFiles(fileId: string) {
       console.log("Fetched file data:", res.data);
       return res.data.data as FileType;
     },
-    staleTime: 1000 * 60 * 5, // cache for 5 mins
+    staleTime: 1000 * 60 * 5, // Cache is fresh for 5 minutes
+    gcTime: 1000 * 60 * 30, // Keep in memory for 30 minutes to prevent garbage collection on unmount
+    refetchOnWindowFocus: false, // Don't refetch on window focus
+    refetchInterval: false, // No automatic refetch
     enabled: !!fileId,
   });
 }

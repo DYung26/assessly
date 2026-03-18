@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { CircleChevronLeft, CircleChevronRight, Plus, Search, Folder, FolderOpen, Ellipsis, Bot, Files } from "lucide-react";
+import { CircleChevronLeft, CircleChevronRight, Plus, Search, Folder, FolderOpen, Ellipsis, Bot } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { Button } from "./ui/button";
 import clsx from "clsx";

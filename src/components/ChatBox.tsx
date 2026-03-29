@@ -193,6 +193,42 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
     setFiles(prev => [...prev, ...newFiles]);
   }
 
+  const handlePaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const clipboardItems = e.clipboardData?.items;
+    if (!clipboardItems) return;
+
+    let hasImages = false;
+    const pastedFiles: File[] = [];
+
+    for (let i = 0; i < clipboardItems.length; i++) {
+      const item = clipboardItems[i];
+
+      // Check if the item is an image
+      if (item.type.startsWith("image/")) {
+        hasImages = true;
+        const blob = item.getAsFile();
+        if (blob) {
+          // Generate a unique name for the pasted image
+          // Format: pasted-image-<timestamp>-<index>.<extension>
+          const timestamp = Date.now();
+          const extension = item.type.split("/")[1] || "png";
+          const fileName = `pasted-image-${timestamp}-${i}.${extension}`;
+
+          const file = new File([blob], fileName, { type: item.type });
+          pastedFiles.push(file);
+        }
+      }
+    }
+
+    // If images were found, add them to the files state and prevent default paste
+    if (hasImages) {
+      e.preventDefault();
+      if (pastedFiles.length > 0) {
+        setFiles(prev => [...prev, ...pastedFiles]);
+      }
+    }
+  };
+
   const removeFile = (fileNameToRemove: string) => {
     setFiles(prev => prev.filter(file => file.name !== fileNameToRemove));
 
@@ -281,6 +317,7 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
             value={message}
             onKeyDown={handleKeyDown}
             onChange={(e) => setMessage(e.target.value)}
+            onPaste={handlePaste}
           />
         )}
 

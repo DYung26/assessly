@@ -22,6 +22,8 @@ export type Message = {
   instructions?: string;
   role: RoleEnum;
   content: string;
+  turn_index?: number;
+  message_index?: number;
   created_at: string;
 };
 

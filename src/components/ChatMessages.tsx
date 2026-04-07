@@ -8,7 +8,10 @@ import { ThreeDotLoader } from "./ui/three-dot-loader";
 import CopyButton from "./CopyButton";
 import ReadAloud from "./ReadAloud";
 import DownloadButton from "./DownloadButton";
-import FilePreview from "reactjs-file-preview";
+import dynamic from "next/dynamic";
+const FilePreview = dynamic(() => import("reactjs-file-preview"), {
+  ssr: false,
+});
 
 export default function ChatMessages({
   messages,

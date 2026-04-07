@@ -4,6 +4,7 @@ import ChatPromptBox from "@/components/ChatBox";
 import ChatMessages from "@/components/ChatMessages";
 import { sendMessage } from "@/lib/chat/sendMessage";
 import { useMessages } from "@/lib/hooks/useMessages";
+import { useAuthRedirect } from "@/lib/hooks/useAuthRedirect";
 import { useChatStore } from "@/lib/store/chat";
 import { Message, RoleEnum } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -14,6 +15,7 @@ type PageProps = {
 }
 
 export default function Chat({ params }: PageProps) {
+  useAuthRedirect();
   const { chat_id: chatId } = use(params);
   const searchParams = useSearchParams();
   const assessmentId = searchParams.get("id") as string;

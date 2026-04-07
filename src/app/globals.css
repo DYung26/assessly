@@ -229,4 +229,37 @@
     white-space: nowrap;
     display: inline-block;
   }
+
+  /* Scrollbar visibility on hover */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-show {
+    -ms-overflow-style: auto;
+    scrollbar-width: auto;
+  }
+
+  .scrollbar-show::-webkit-scrollbar {
+    display: block;
+    width: 6px;
+  }
+
+  .scrollbar-show::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-show::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+  }
+
+  .scrollbar-show::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+  }
 }

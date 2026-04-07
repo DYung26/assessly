@@ -5,9 +5,11 @@ import { NewAssessmentDialog } from "@/components/NewAssessmentDialog";
 import Sidebar from "@/components/Sidebar";
 import TypingHeader from "@/components/TypingHeader";
 import { useUser } from "@/lib/hooks/useUser";
+import { useAuthRedirect } from "@/lib/hooks/useAuthRedirect";
 import { useState } from "react";
 
 export default function Home() {
+  useAuthRedirect();
   const { data: user } = useUser();
   const [newAssessmentsOpen, setNewAssessmentsOpen] = useState(false);
 

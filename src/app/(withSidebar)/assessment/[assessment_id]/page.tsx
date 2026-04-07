@@ -7,6 +7,7 @@ import PageLoader from "@/components/PageLoader";
 import TypingHeader from "@/components/TypingHeader";
 // import { sendMessage } from "@/lib/chat/sendMessage";
 import { useAssessmentChats } from "@/lib/hooks/useChats";
+import { useAuthRedirect } from "@/lib/hooks/useAuthRedirect";
 import { mutationFn } from "@/lib/mutationFn";
 import { queryClient } from "@/lib/queryClient";
 import { useChatStore } from "@/lib/store/chat";
@@ -18,8 +19,8 @@ type PageProps = {
   params: Promise<{ assessment_id: string }>;
 }
 
-// TODO: redirect unauthenticated users to login
 export default function Assessment({ params }: PageProps) {
+  useAuthRedirect();
   const { assessment_id } = use(params);
   const { data: chats = [] } = useAssessmentChats(assessment_id as string);
   const [isSubmitting, setIsSubmitting] = useState(false);

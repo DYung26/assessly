@@ -21,6 +21,7 @@ export default function ChatsList({ chats }: { chats?: Chat[] }) {
   const [editingTitle, setEditingTitle] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [chatToDelete, setChatToDelete] = useState<string | null>(null);
+  const [showScrollbar, setShowScrollbar] = useState(false);
 
   const updateChatMutation = useMutation({
     mutationFn,
@@ -67,10 +68,12 @@ export default function ChatsList({ chats }: { chats?: Chat[] }) {
 
   return (
     <div
-      className="max-w-3xl w-full p-2 justify-items-start flex flex-col gap-2 max-h-80 shadow-md rounded-md border border-gray-200"
+      className="max-w-3xl w-full p-2 justify-items-start flex flex-col gap-2 max-h-60 sm:max-h-80 shadow-md rounded-md border border-gray-200 bg-white"
+      onMouseEnter={() => setShowScrollbar(true)}
+      onMouseLeave={() => setShowScrollbar(false)}
     >
-      <p className="font-semibold border-b">Chats</p>
-      <div className="flex flex-col overflow-y-auto w-full">
+      <p className="font-semibold border-b text-sm">Chats</p>
+      <div className={`flex flex-col overflow-y-auto w-full ${showScrollbar ? 'scrollbar-show' : 'scrollbar-hide'}`}>
         {[...chats].reverse().map((chat: Chat) => {
           return (
             <div

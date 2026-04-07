@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { formatDateTime } from "@/lib/utils";
+import { useAuthRedirect } from "@/lib/hooks/useAuthRedirect";
 import { useFilesPaginated } from "@/lib/hooks/useFilesPaginated";
 import { FileGridSkeletonGroup } from "@/components/FileGridSkeleton";
 
@@ -12,6 +13,7 @@ const FilePreview = dynamic(() => import("reactjs-file-preview"), {
 });
 
 export default function FilesPage() {
+  useAuthRedirect();
   const {
     data,
     fetchNextPage,

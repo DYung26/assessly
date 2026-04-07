@@ -61,21 +61,21 @@ export default function ContextDock () {
   const hasCustomInstructions = !!(assessmentData?.custom_instruction && assessmentData.custom_instruction.trim());
 
   return (
-    <div className="flex justify-between max-w-3xl w-full gap-16">
+    <div className="flex flex-col sm:flex-row justify-between max-w-3xl w-full gap-4 sm:gap-16 px-2 sm:px-0">
       <div
         onClick={() => setMarkingSchemeModalOpen(true)}
-        className={`flex-1 relative flex justify-between items-center gap-4 p-3 rounded-lg shadow-sm cursor-pointer text-black transition-colors ${
+        className={`flex-1 relative flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg shadow-sm cursor-pointer text-black transition-colors ${
           markingSchemeCount > 0
             ? "bg-blue-50 hover:bg-blue-100 border border-blue-300"
             : "bg-white hover:bg-gray-100 border border-gray-300"
         }`}
       >
         <div className="flex flex-col text-left">
-          <span className="text-sm font-medium">Upload marking scheme</span>
+          <span className="text-xs sm:text-sm font-medium">Upload marking scheme</span>
           <span className="text-xs text-gray-500">Supported documents & code files</span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-shrink-0">
           {markingSchemeCount > 0 && (
             <div className="flex items-center justify-center min-w-6 h-6 bg-blue-600 text-white text-xs font-semibold rounded-full px-1.5">
               {markingSchemeCount}
@@ -89,17 +89,17 @@ export default function ContextDock () {
 
       <div
         onClick={() => setInstructionsDialogOpen(true)}
-        className={`flex-1 flex justify-between items-center p-3 rounded-lg shadow-sm cursor-pointer text-black transition-colors ${
+        className={`flex-1 flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg shadow-sm cursor-pointer text-black transition-colors ${
           hasCustomInstructions
             ? "bg-amber-50 hover:bg-amber-100 border border-amber-300"
             : "bg-white hover:bg-gray-100 border border-gray-300"
         }`}
       >
         <div className="flex flex-col text-left">
-          <span className="text-sm font-medium">Add custom instructions</span>
+          <span className="text-xs sm:text-sm font-medium">Add custom instructions</span>
           <span className="text-xs text-gray-500">Tailor the way {APP_CONFIG.ASSISTANT_NAME} responds to this assessment</span>
         </div>
-        <div className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full">
+        <div className="flex items-center justify-center w-8 h-8 bg-gray-200 rounded-full flex-shrink-0">
           <Pencil size={18} />
         </div>
       </div>

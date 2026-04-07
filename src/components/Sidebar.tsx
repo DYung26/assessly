@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { CircleChevronLeft, CircleChevronRight, Plus, Search, Folder, FolderOpen, Ellipsis, Bot } from "lucide-react";
 import { ScrollArea } from "./ui/scroll-area";
 import { Button } from "./ui/button";
@@ -19,7 +19,7 @@ import { queryClient } from "@/lib/queryClient";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { formatDateTime } from "@/lib/utils";
 
-export default function Sidebar() {
+export default function Sidebar({ onClose }: { onClose?: () => void }) {
   const {  data: user } = useUser();
   const { data: assessments = [] } = useAssessments(user?.id || "");
   const [expanded, setExpanded] = useState(true);
@@ -29,10 +29,20 @@ export default function Sidebar() {
   const [isPending, startTransition] = useTransition();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
 
   const router = useRouter();
   const params = useParams();
   const currentAssessmentId = params?.assessment_id as string | undefined;
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const updateAssessmentMutation = useMutation({
     mutationFn,
@@ -75,12 +85,21 @@ export default function Sidebar() {
     setEditingTitle("");
   };
 
+  const handleAssessmentClick = (assessmentId: string) => {
+    startTransition(() => {
+      router.push(`/assessment/${assessmentId}`)
+    })
+    onClose?.();
+  };
+
   return (
     <aside className={clsx(
-      "flex flex-col bg-gray-100 border-r border-gray-200 transition-all duration-300",
-      expanded ? "w-64" : "w-16"
+      "flex flex-col bg-gray-100 border-r border-gray-200 transition-all duration-300 overflow-hidden",
+      "w-64 md:w-64",
+      !expanded && isMobile && "w-16",
+      !expanded && !isMobile && "md:w-16"
     )}>
-      <div className="flex items-center justify-between px-2 py-4 border-b">
+      <div className="flex items-center justify-between px-2 py-4 border-b flex-shrink-0">
         {expanded && <span className="text-sm font-semibold ml-2">Menu</span>}
         <button
           onClick={() => setExpanded(!expanded)}
@@ -108,19 +127,6 @@ export default function Sidebar() {
           {expanded && "Search Assessments"}
         </Button>
 
-        {/* <Button
-          variant="ghost"
-          onClick={() => {
-            startTransition(() => {
-              router.push("/files");
-            });
-          }}
-          className="w-full justify-start cursor-pointer p-1 border-b"
-        >
-          <Files size={20} className="mr-2" />
-          {expanded && "My Files"}
-        </Button> */}
-
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
@@ -128,18 +134,18 @@ export default function Sidebar() {
                 variant="ghost"
                 className="w-full justify-start cursor-not-allowed p-2 rounded-xl text-white bg-gradient-to-r from-cyan-500 via-indigo-600 via-purple-600 to-rose-500 hover:opacity-90 transition-all duration-300 shadow-md"
               >
-                <Bot size={20} className="mr-2 text-white" />
+                <Bot size={20} className="mr-2 text-white flex-shrink-0" />
                 {expanded && "AI Tutor - Coming Soon"}
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">
+            <TooltipContent side={expanded ? "right" : "top"}>
               Coming soon
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </nav>
 
-      <div className="flex-1 mt-1 border-t border-b shrink-0">
+      <div className="flex-1 mt-1 border-t border-b shrink-0 flex flex-col">
         {expanded &&
           <p
             className="px-3 py-2 text-xs text-muted-foreground font-semibold uppercase"
@@ -148,7 +154,7 @@ export default function Sidebar() {
           </p>
         }
         <ScrollArea
-          className="flex-1 overflow-y-auto overflow-x-hidden mt-2 h-[calc(100vh-360px)]"
+          className="flex-1 overflow-y-auto overflow-x-hidden mt-2"
         >
         {/*h-[calc(100vh-220px)]*/}
           <ul className="space-y-2 pb-1 px-2">
@@ -162,11 +168,7 @@ export default function Sidebar() {
               >
                 <div className="flex items-center gap-2 p-2">
                   <button
-                    onClick={() => {
-                      startTransition(() => {
-                        router.push(`/assessment/${a.id}`)
-                      })
-                    }}
+                    onClick={() => handleAssessmentClick(a.id)}
                     className="flex-1 cursor-pointer text-left min-w-0 overflow-hidden"
                   >
                     <div className="flex items-center gap-2 text-sm font-medium text-gray-800">

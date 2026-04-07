@@ -70,8 +70,7 @@ export default function Assessment({ params }: PageProps) {
     <div className="flex flex-col flex-1 overflow-hidden">
       {chats &&
         <main
-          className="flex flex-col flex-1 px-4 py-4 gap-4 items-center
-                     justify-center"
+          className="flex flex-col flex-1 px-2 sm:px-4 py-4 gap-4 items-center justify-center overflow-y-auto"
         >
           <TypingHeader />
           <ChatPromptBox action={handleSend} />

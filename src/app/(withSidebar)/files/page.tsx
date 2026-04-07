@@ -44,10 +44,10 @@ export default function FilesPage() {
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
-      <main className="flex flex-col flex-1 px-8 py-6 overflow-y-auto">
+      <main className="flex flex-col flex-1 px-4 sm:px-6 md:px-8 py-4 sm:py-6 overflow-y-auto">
         <div className="max-w-7xl w-full mx-auto">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">My Files</h1>
-          <p className="text-sm text-gray-500 mb-6">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">My Files</h1>
+          <p className="text-xs sm:text-sm text-gray-500 mb-6">
             All files you&apos;ve uploaded across assessments and chats
           </p>
 
@@ -55,7 +55,7 @@ export default function FilesPage() {
             <FileGridSkeletonGroup count={12} />
           ) : files.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-3 md:gap-4">
                 {files.map((file) => (
                   <div
                     key={file.id}
@@ -65,11 +65,11 @@ export default function FilesPage() {
                       <FilePreview preview={file.url || file.download_url} />
                     </div>
 
-                    <div className="flex-1 flex flex-col p-4">
-                      <h3 className="text-sm font-medium text-gray-900 truncate mb-2">
+                    <div className="flex-1 flex flex-col p-2 sm:p-3">
+                      <h3 className="text-xs sm:text-sm font-medium text-gray-900 truncate mb-2">
                         {file.filename}
                       </h3>
-                      <p className="text-xs text-gray-400 mt-auto">
+                      <p className="text-[10px] sm:text-xs text-gray-400 mt-auto">
                         {formatDateTime(file.uploaded_at)}
                       </p>
                     </div>

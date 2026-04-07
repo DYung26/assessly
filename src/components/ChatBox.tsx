@@ -267,10 +267,10 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-0 pb-4 z-10">
+    <div className="w-full px-2 sm:px-4 pb-4 z-10">
       {/*fixed bottom-0 left-0 right-0 ">*/}
       {/*<div className="w-full max-w-3xl fixed bottom-0 left-0 right-0 mx-auto px-4 pb-4">*/}
-      <div className="bg-white border rounded-xl shadow-sm p-2 flex flex-col gap-0">
+      <div className="max-w-3xl mx-auto bg-white border rounded-xl shadow-sm p-2 sm:p-3 flex flex-col gap-0">
         {uploads.length > 0 && (
           <div className="flex flex-wrap gap-2 p-2">
             {uploads.map(({ file, isPending }) => (
@@ -279,25 +279,6 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
                   file={file}
                   isPending={isPending}
                 />
-                {/*file.type.startsWith("image/") ? (
-                  <Image
-                    src={URL.createObjectURL(file)}
-                    alt={file.name}
-                    fill
-                    className="object-cover w-full h-full"
-                  />
-                ) : (
-                  <FilePreviewWrapper
-                    file={file}
-                    onUploaded={(fileId) => {
-                      setFileIds((prev) => [...prev, fileId]);
-                    }}
-                  />
-                  // <div className="flex items-center justify-center h-full text-xs text-gray-500 px-1 text-center">
-                  //   {file.name.split('.').pop()?.toUpperCase()}
-                  // </div>
-                )*/}
-
                 {/* X Button */}
                 <button
                   onClick={() => removeFile(file.name)}
@@ -312,8 +293,8 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
 
         {!isRecording && (
           <Textarea
-            placeholder="Type your message to create a new chat in this assessment..."
-            className="resize-none border-0 shadow-none min-h-10 focus-visible:ring-0 focus-visible:ring-offset-0"
+            placeholder="Type your message..."
+            className="resize-none border-0 shadow-none min-h-10 text-sm sm:text-base focus-visible:ring-0 focus-visible:ring-offset-0"
             value={message}
             onKeyDown={handleKeyDown}
             onChange={(e) => setMessage(e.target.value)}
@@ -328,12 +309,12 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
           />
         }
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            <label className="inline-flex items-center gap-1 border px-1.5 py-1 rounded-xl cursor-pointer text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-1 w-full sm:w-auto">
+            <label className="inline-flex items-center gap-1 border px-1.5 py-1 rounded-xl cursor-pointer text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors text-sm"
             >
-              <Paperclip className="w-4 h-4" />
-              <span className="text-sm">Attach</span>
+              <Paperclip className="w-4 h-4 flex-shrink-0" />
+              <span className="hidden sm:inline">Attach</span>
               <input
                 type="file"
                 multiple
@@ -345,22 +326,22 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
 
             <Popover>
               <PopoverTrigger asChild>
-                <button className="inline-flex items-center gap-1 border px-1.5 py-1 rounded-xl cursor-pointer text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors">
-                  <ListChecks className="w-4 h-4" />
-                  <span className="text-sm">Instructions</span>
+                <button className="inline-flex items-center gap-1 border px-1.5 py-1 rounded-xl cursor-pointer text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors text-sm">
+                  <ListChecks className="w-4 h-4 flex-shrink-0" />
+                  <span className="hidden sm:inline">Instructions</span>
                 </button>
               </PopoverTrigger>
               <InstructionsPopover action={handleQuickInstructions} />
             </Popover>
           </div>
 
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-2 items-center w-full sm:w-auto justify-end">
             {!isRecording ? (
               <>
                 <Button
                   size="icon"
                   onClick={startRecording}
-                  className="p-1 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 cursor-pointer"
+                  className="p-1 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 cursor-pointer flex-shrink-0"
                 >
                   <Mic className="w-4 h-4" />
                 </Button>
@@ -368,9 +349,9 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
                 <Button
                   size="icon"
                   onClick={() => setVoiceAgentOpen(true)}
-                  className="p-1 rounded-full bg-gray-200 text-gray-700 cursor-pointer hover:text-gray-900 hover:bg-gray-300"
+                  className="p-1 rounded-full bg-gray-200 text-gray-700 cursor-pointer hover:text-gray-900 hover:bg-gray-300 flex-shrink-0"
                 >
-                  <AudioLines />
+                  <AudioLines className="w-4 h-4" />
                 </Button>
 
                 <Tooltip>
@@ -379,7 +360,7 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
                       <Button
                         onClick={handleSend}
                         disabled={(!message.trim() && uploads.length === 0) || isUploadingFiles}
-                        className="p-1 rounded-full bg-blue-600 text-white hover:bg-blue-700 cursor-pointer disabled:bg-blue-300 disabled:cursor-not-allowed disabled:hover:bg-blue-300"
+                        className="p-1 rounded-full bg-blue-600 text-white hover:bg-blue-700 cursor-pointer disabled:bg-blue-300 disabled:cursor-not-allowed disabled:hover:bg-blue-300 flex-shrink-0"
                       >
                         <Send className="w-4 h-4" />
                       </Button>
@@ -395,14 +376,14 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
                 <Button
                   size="icon"
                   onClick={cancelRecording}
-                  className="p-2 rounded-full bg-red-200 hover:bg-red-300 text-red-700 cursor-pointer"
+                  className="p-2 rounded-full bg-red-200 hover:bg-red-300 text-red-700 cursor-pointer flex-shrink-0"
                 >
                   <X className="w-4 h-4" />
                 </Button>
                 <Button
                   size="icon"
                   onClick={() => mediaRecorderRef.current?.stop()}
-                  className="p-2 rounded-full bg-green-200 hover:bg-green-300 text-green-700 cursor-pointer"
+                  className="p-2 rounded-full bg-green-200 hover:bg-green-300 text-green-700 cursor-pointer flex-shrink-0"
                 >
                   <Check className="w-4 h-4" />
                 </Button>

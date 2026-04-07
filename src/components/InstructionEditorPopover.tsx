@@ -16,7 +16,7 @@ export function InstructionEditorPopover(
   };
 
   return (
-    <PopoverContent className="w-80 p-4 space-y-3">
+    <PopoverContent className="w-72 sm:w-80 p-3 sm:p-4 space-y-3">
       <h3 className="text-sm font-medium text-gray-700">Custom Instructions</h3>
 
       <Textarea

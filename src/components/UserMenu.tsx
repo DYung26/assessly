@@ -29,7 +29,7 @@ export default function UserMenu() {
             {initials}
           </div>
         </PopoverTrigger>
-        <PopoverContent side="bottom" align="end" className="w-60 p-2">
+        <PopoverContent side="bottom" align="end" className="w-48 sm:w-60 p-2">
           <div className="flex flex-col gap-1 text-sm text-gray-500 px-2 py-1.5">
             <div className="text-black font-medium">
               {user.first_name.toUpperCase()} {user.last_name.toUpperCase()}

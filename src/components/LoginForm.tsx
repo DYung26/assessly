@@ -76,8 +76,8 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="mt-10 p-4">
-      <h2 className="text-4xl font-bold mb-4 text-center">Welcome back</h2>
+    <div className="mt-8 sm:mt-10 p-3 sm:p-4">
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-center">Welcome back</h2>
       <GoogleSignInButton isSubmitting={isSubmitting} />
       <div className="relative my-6">
         <div className="absolute inset-0 flex items-center">

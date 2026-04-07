@@ -42,7 +42,7 @@ export default function ChatMessages({
   }, [messages.length, streamingContent, scrollToBottom]); // - streamingContent
 
   return (
-    <div className="flex flex-col w-full max-w-3xl py-2 px-2 space-y-4 overflow-y-auto">
+    <div className="flex flex-col w-full max-w-3xl px-2 sm:px-4 py-2 space-y-4 overflow-y-auto">
       {messages.map((msg) => {
         const isStreaming = msg.id === streamingMessageId;
         const { html: content, converted } = isStreaming
@@ -51,11 +51,11 @@ export default function ChatMessages({
 
         const isUser = msg.role === RoleEnum.USER;
         return (
-          <div className="flex flex-col space-y-0.5 " key={msg.id}>
+          <div className="flex flex-col space-y-0.5" key={msg.id}>
             <div
               key={msg.id}
-              className={`rounded-xl p-2 shadow break-words ${isUser
-                ? "ml-auto bg-gray-100 text-left max-w-[50%] min-w-0"
+              className={`rounded-xl p-3 sm:p-4 shadow break-words ${isUser
+                ? "ml-auto bg-gray-100 text-left max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg min-w-0"
                 : ""
                 }`}
             >
@@ -73,13 +73,13 @@ export default function ChatMessages({
                 </div>
               ) : (
                 <div
-                  className="markdown-body"
+                  className="markdown-body text-sm sm:text-base"
                   dangerouslySetInnerHTML={{ __html: content }}
                 />
               )}
             </div>
             {!isStreaming &&
-              <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+              <div className={`flex gap-1 ${isUser ? "justify-end" : "justify-start"}`}>
                   <CopyButton
                     htmlContent={content}
                     rawText={converted}

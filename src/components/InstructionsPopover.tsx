@@ -29,7 +29,7 @@ export function InstructionsPopover({ action }: InstructionsPopoverProps) {
     <PopoverContent
       side="bottom"
       align="start"
-      className="w-64 p-2 space-y-1"
+      className="w-52 sm:w-64 p-2 space-y-1"
     >
       <h4 className="font-medium text-sm text-gray-900">Quick Instructions</h4>
       <div className="space-y-1.5">

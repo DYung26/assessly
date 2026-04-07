@@ -88,7 +88,7 @@ export default function Chat({ params }: PageProps) {
     <div className="flex flex-col flex-1 overflow-hidden">
       <main
         ref={mainRef}
-        className="flex flex-col flex-1 px-4 py-4 gap-4 overflow-y-auto"
+        className="flex flex-col flex-1 px-2 sm:px-4 py-2 sm:py-4 gap-2 sm:gap-4 overflow-y-auto"
       >
         <div className="flex flex-col items-center">
           <ChatMessages

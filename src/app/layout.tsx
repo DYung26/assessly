@@ -5,6 +5,7 @@ import ReactQueryProvider from "../components/ReactQueryProvider";
 import { Toaster } from "@/components/ui/sonner";
 import RouteChangeLoader from "@/components/RouteChangeLoader";
 import Header from "@/components/Header";
+import { PricingModal } from "@/components/PricingModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,7 @@ export default function RootLayout({
           <RouteChangeLoader />
           <Header />
           {children}
+          <PricingModal />
         </ReactQueryProvider>
         <Toaster />
       </body>

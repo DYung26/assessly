@@ -7,10 +7,12 @@ import { useState } from "react";
 import { useAuth } from "@/lib/store/auth";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
+import { useModalURL } from "@/hooks/useModalURL";
 
 export default function UserMenu() {
   const { user, logout } = useAuth();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const { open: openPricingModal } = useModalURL('pricing');
   const initials = user
     ? `${user.first_name[0] ?? ""}${user.last_name[0] ?? ""}`.toUpperCase()
     : "";
@@ -41,7 +43,11 @@ export default function UserMenu() {
           </div>
 
           <div className="mt-2 space-y-1">
-            <Button variant="ghost" className="w-full justify-start gap-2 cursor-pointer">
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start gap-2 cursor-pointer"
+              onClick={openPricingModal}
+            >
               <Rocket size={16} />
               Upgrade Plan
             </Button>

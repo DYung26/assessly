@@ -4,10 +4,16 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Settings, Bell, Shield, User2, Link } from "lucide-react";
+import { Settings, Bell, Shield, User2, Link, Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/store/auth";
 import { useRouter } from "next/navigation";
 import { ConnectedApps } from "./ConnectedApps";
+import { UpgradePlanButton } from "./UpgradePlanButton";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useModalURL } from "@/hooks/useModalURL";
+import { getPlanMetadata } from "@/constants/plans";
+import { createPortalSession } from "@/services/billing";
+import { toast } from "sonner";
 
 const languages = [
   { value: "auto", label: "Auto-detect" },
@@ -34,8 +40,32 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const [activeTab, setActiveTab] = useState("general");
   const [theme, setTheme] = useState("system");
   const [language, setLanguage] = useState("auto");
+  const [portalLoading, setPortalLoading] = useState(false);
   const { logout } = useAuth();
   const router = useRouter();
+  const { subscription } = useSubscription();
+  const { open: openPricingModal } = useModalURL('pricing');
+
+  const handleOpenPricing = () => {
+    openPricingModal();
+  };
+
+  const handleManageBilling = async () => {
+    setPortalLoading(true);
+    try {
+      const result = await createPortalSession();
+      if (result.url) {
+        window.location.assign(result.url);
+      } else {
+        toast.error('Failed to open billing portal');
+        setPortalLoading(false);
+      }
+    } catch (error) {
+      console.error('Portal session error:', error);
+      toast.error('Failed to open billing portal. Please try again.');
+      setPortalLoading(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -144,9 +174,44 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
 
             {activeTab === "account" && (
               <>
-                <div className="flex items-center justify-between">
-                  <span>Upgrade Plan</span>
-                  <Button className="cursor-pointer">Upgrade</Button>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium">Subscription Plan</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Current plan: <span className="font-semibold text-foreground">{getPlanMetadata(subscription.plan).name}</span>
+                      </p>
+                    </div>
+                    <UpgradePlanButton 
+                      label="Upgrade" 
+                      onClick={handleOpenPricing}
+                      className="gap-2 cursor-pointer"
+                    />
+                  </div>
+
+                  {/* Manage Billing - Only show for paid subscribers */}
+                  {subscription.is_paid && subscription.stripe_customer_id && (
+                    <div className="border-t pt-4">
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Manage your billing, payment method, invoices, and more.
+                      </p>
+                      <Button
+                        onClick={handleManageBilling}
+                        disabled={portalLoading}
+                        variant="outline"
+                        className="cursor-pointer"
+                      >
+                        {portalLoading ? (
+                          <>
+                            <Loader2 className="size-4 animate-spin mr-2" />
+                            Loading...
+                          </>
+                        ) : (
+                          'Manage Billing'
+                        )}
+                      </Button>
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center justify-between mt-4">
                   <span>Delete Account</span>

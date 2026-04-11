@@ -1,9 +1,12 @@
+import type { CurrentSubscription } from './billing';
+
 export type User = {
   id: string;
   email: string;
   first_name: string;
   last_name: string;
   oauth_providers?: OAuthProvider[];
+  subscription?: CurrentSubscription;
 }
 
 export type OAuthProvider = {

@@ -78,9 +78,18 @@ export async function mutationFn(
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       if (error.response) {
-        throw new Error(
-          `${error.response.status}: ${error.response.data.message || error.response.data}`
-    );
+        // Extract message from response data (without status code - it's not user-facing)
+        const responseData = error.response.data;
+        let message = "An error occurred. Please try again.";
+        
+        if (typeof responseData === 'object' && responseData !== null && 'message' in responseData) {
+          const data = responseData as Record<string, unknown>;
+          message = String(data.message);
+        } else if (typeof responseData === 'string') {
+          message = responseData;
+        }
+        
+        throw new Error(message);
       } else if (error.request) {
         throw new Error("No response from server. Please try again.");
       } else {

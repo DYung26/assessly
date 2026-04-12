@@ -61,3 +61,27 @@ export type CreateCheckoutSessionResult = {
 export type CreatePortalSessionResult = {
   url: string;
 };
+
+/**
+ * Entitlements define what features and resource limits a user has.
+ * These are determined by their current subscription plan.
+ */
+export type Entitlements = {
+  max_active_assessments: number | null; // null = unlimited
+  max_assessment_files_per_assessment: number;
+  max_assessment_file_size_mb: number;
+  max_message_attachments_per_message: number;
+  max_message_attachment_size_mb: number;
+  audio_to_text_enabled: boolean;
+  realtime_voice_agent_enabled: boolean;
+};
+
+/**
+ * Response shape for entitlements query.
+ * Maps plan to tier and provides specific entitlements.
+ */
+export type EntitlementsResponse = {
+  plan: PlanType;
+  tier: 'free' | 'pro';
+  entitlements: Entitlements;
+};

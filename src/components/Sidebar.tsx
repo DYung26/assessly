@@ -20,6 +20,7 @@ import { mutationFn } from "@/lib/mutationFn";
 import { queryClient } from "@/lib/queryClient";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { formatDateTime } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function Sidebar() {
   const {  data: user } = useUser();
@@ -45,6 +46,13 @@ export default function Sidebar() {
       console.log("Assessment updated:", data);
       queryClient.invalidateQueries({
         queryKey: ["assessments", user?.id || ""]
+      });
+      toast.success("Assessment updated successfully");
+      setEditingId(null);
+    },
+    onError: (error: unknown) => {
+      toast.error("Failed to update assessment", {
+        description: error instanceof Error ? error.message : "Unknown error",
       });
     },
   });

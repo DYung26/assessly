@@ -2,11 +2,11 @@
 
 import { Button } from '@/components/ui/button';
 import {
-  Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import * as TooltipPrimitive from '@radix-ui/react-tooltip';
 import { useCanUseFeature } from '@/hooks/useEntitlements';
 import type { ComponentProps } from 'react';
 
@@ -61,17 +61,19 @@ export function FeatureLockedButton({
 
   // Feature is locked - show disabled button with tooltip
   return (
-    <TooltipProvider>
-      <Tooltip>
+    <TooltipProvider delayDuration={200}>
+      <TooltipPrimitive.Root>
         <TooltipTrigger asChild>
-          <Button disabled={isDisabled} {...props}>
-            {children}
-          </Button>
+          <span className="inline-block">
+            <Button disabled={isDisabled} {...props}>
+              {children}
+            </Button>
+          </span>
         </TooltipTrigger>
-        <TooltipContent>
-          <p className="text-xs">{tooltip}</p>
+        <TooltipContent sideOffset={4} className="w-fit max-w-xs whitespace-normal break-words text-wrap">
+          <span className="text-xs">{tooltip}</span>
         </TooltipContent>
-      </Tooltip>
+      </TooltipPrimitive.Root>
     </TooltipProvider>
   );
 }

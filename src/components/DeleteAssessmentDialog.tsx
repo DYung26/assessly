@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { mutationFn } from "@/lib/mutationFn";
 import { queryClient } from "@/lib/queryClient";
 import { useUser } from "@/lib/hooks/useUser";
+import { toast } from "sonner";
 
 interface NewAssessmentDialogProps {
   open: boolean;
@@ -22,6 +23,13 @@ export function DeleteAssessmentDialog(
       console.log("Assessment deleted:", data);
       queryClient.invalidateQueries({
         queryKey: ["assessments", user?.id || ""]
+      });
+      toast.success("Assessment deleted successfully");
+      onOpenChange(false);
+    },
+    onError: (error: unknown) => {
+      toast.error("Failed to delete assessment", {
+        description: error instanceof Error ? error.message : "Unknown error",
       });
     },
   });

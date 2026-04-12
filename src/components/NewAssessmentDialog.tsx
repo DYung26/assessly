@@ -10,6 +10,7 @@ import { useState } from "react";
 import { ThreeDotLoader } from "./ui/three-dot-loader";
 import { queryClient } from "@/lib/queryClient";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface NewAssessmentDialogProps {
   open: boolean;
@@ -43,9 +44,15 @@ export function NewAssessmentDialog({ open, onOpenChange }: NewAssessmentDialogP
       queryClient.invalidateQueries({
         queryKey: ["assessments", user?.id]
       });
+      toast.success("Assessment created successfully");
       onOpenChange(false);
       router.push(`/assessment/${data.data.id}`);
       form.reset();
+    },
+    onError: (error: unknown) => {
+      toast.error("Failed to create assessment", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
     },
   });
 
@@ -54,7 +61,6 @@ export function NewAssessmentDialog({ open, onOpenChange }: NewAssessmentDialogP
     newAssessmentMutation.mutate({
       url: "/assessment",
       body: {
-        user_id: user?.id,
         title: data.name
       },
     });

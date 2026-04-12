@@ -14,6 +14,7 @@ import { Popover, PopoverTrigger } from "./ui/popover";
 import { InstructionsPopover } from "./InstructionsPopover";
 import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 import { APP_CONFIG } from "@/lib/config";
+import { FeatureLockedButton } from "./FeatureLockedButton";
 
 export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
   const [files, setFiles] = useState<File[]>([]);
@@ -357,21 +358,25 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
           <div className="flex gap-2 items-center">
             {!isRecording ? (
               <>
-                <Button
+                <FeatureLockedButton
+                  featureName="audio_to_text"
                   size="icon"
                   onClick={startRecording}
                   className="p-1 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 cursor-pointer"
+                  lockedTooltip="Audio-to-text is available on Pro. Upgrade to transcribe audio."
                 >
                   <Mic className="w-4 h-4" />
-                </Button>
+                </FeatureLockedButton>
 
-                <Button
+                <FeatureLockedButton
+                  featureName="realtime_voice_agent"
                   size="icon"
                   onClick={() => setVoiceAgentOpen(true)}
                   className="p-1 rounded-full bg-gray-200 text-gray-700 cursor-pointer hover:text-gray-900 hover:bg-gray-300"
+                  lockedTooltip="Realtime voice agent is available on Pro. Upgrade to use voice conversations."
                 >
                   <AudioLines />
-                </Button>
+                </FeatureLockedButton>
 
                 <Tooltip>
                   <TooltipTrigger asChild>

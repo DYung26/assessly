@@ -12,6 +12,7 @@ import { useMutation } from "@tanstack/react-query";
 import { mutationFn } from "@/lib/mutationFn";
 import { queryClient } from "@/lib/queryClient";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
 
 export default function ChatsList({ chats }: { chats?: Chat[] }) {
   const router = useRouter();
@@ -29,6 +30,13 @@ export default function ChatsList({ chats }: { chats?: Chat[] }) {
       console.log("Chat updated:", data);
       queryClient.invalidateQueries({
         queryKey: ["assessmentChats", assessmentId]
+      });
+      toast.success("Chat renamed successfully");
+      setEditingId(null);
+    },
+    onError: (error: unknown) => {
+      toast.error("Failed to rename chat", {
+        description: error instanceof Error ? error.message : "Unknown error",
       });
     },
   });

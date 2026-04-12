@@ -15,6 +15,7 @@ import { useMutation } from "@tanstack/react-query";
 import { mutationFn } from "@/lib/mutationFn";
 import { queryClient } from "@/lib/queryClient";
 import { APP_CONFIG } from "@/lib/config";
+import { toast } from "sonner";
 
 const FilePreview = dynamic(() => import("reactjs-file-preview"), {
   ssr: false,
@@ -51,9 +52,12 @@ const MarkingSchemeFilePreview = memo(function MarkingSchemeFilePreview({
       queryClient.invalidateQueries({
         queryKey: ["assessment-files", assessmentId],
       });
+      toast.success("File deleted successfully");
     },
     onError: (error) => {
-      console.error("Failed to delete file:", error);
+      toast.error("Failed to delete file", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
     },
   });
 
@@ -99,9 +103,12 @@ export default function MarkingSchemeModal({
       queryClient.invalidateQueries({ 
         queryKey: ["assessment-files", assessmentId] 
       });
+      toast.success("File uploaded successfully");
     },
     onError: (error) => {
-      console.error("File upload failed:", error);
+      toast.error("File upload failed", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
     },
   });
 

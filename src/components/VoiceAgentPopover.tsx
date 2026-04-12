@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { mutationFn } from "@/lib/mutationFn";
 import { useMutation } from "@tanstack/react-query";
 import { RealtimeSession } from "@openai/agents-realtime";
+import { toast } from "sonner";
 
 interface VoiceAgentDialogProps {
   open: boolean;
@@ -23,6 +24,11 @@ export function VoiceAgentDialog({
 
   const ephemeralKeyMutation = useMutation({
     mutationFn: mutationFn,
+    onError: (error: unknown) => {
+      toast.error("Failed to initialize voice agent", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
+    },
   });
 
   const fetchEphemeralKey = async () => {

@@ -76,6 +76,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --toast-text: #000000;
 }
 
 .dark {
@@ -110,6 +111,7 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --toast-text: #ffffff;
 }
 
 @layer base {
@@ -119,6 +121,12 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Override sonner toast description text color */
+  [data-sonner-toast][data-styled='true'] [data-description] {
+    color: var(--toast-text) !important;
+  }
+
   table {
     @apply border-collapse border border-gray-300 w-full;
   }

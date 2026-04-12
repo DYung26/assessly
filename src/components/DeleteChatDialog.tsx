@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { mutationFn } from "@/lib/mutationFn";
 import { queryClient } from "@/lib/queryClient";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
 
 interface DeleteChatDialogProps {
   open: boolean;
@@ -23,6 +24,13 @@ export function DeleteChatDialog(
       console.log("Chat deleted:", data);
       queryClient.invalidateQueries({
         queryKey: ["assessmentChats", assessmentId]
+      });
+      toast.success("Chat deleted successfully");
+      onOpenChange(false);
+    },
+    onError: (error: unknown) => {
+      toast.error("Failed to delete chat", {
+        description: error instanceof Error ? error.message : "Unknown error",
       });
     },
   });

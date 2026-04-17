@@ -24,13 +24,26 @@ export default function BillingSuccessPage() {
 
   // Poll checkout status to see if payment is confirmed and subscription synced
   useEffect(() => {
-    if (!sessionId || !isPolling) return;
+    if (!isPolling) return;
 
     let pollTimeout: NodeJS.Timeout;
     const maxPolls = 12; // ~30 seconds at 2.5s intervals
 
     const pollCheckoutStatus = async () => {
       try {
+        // Only poll if we have a sessionId; otherwise just skip this iteration
+        if (!sessionId) {
+          // Even without sessionId, refresh subscription data periodically
+          await Promise.all([refetchSubscription(), refetchEntitlements()]);
+          setPollCount(prev => prev + 1);
+          if (pollCount < maxPolls) {
+            pollTimeout = setTimeout(pollCheckoutStatus, 2500);
+          } else {
+            setIsPolling(false);
+          }
+          return;
+        }
+
         const status = await getCheckoutStatus(sessionId);
         setCheckoutStatus(status);
         
@@ -96,7 +109,7 @@ export default function BillingSuccessPage() {
         return {
           title: 'Confirming Your Subscription',
           description: 'We\'ve received your payment. Activating your plan...',
-          icon: <Clock className="w-16 h-16 text-amber-500 animate-pulse" />,
+          icon: <Clock className="w-16 h-16 text-blue-500 animate-spin" />,
         };
       case 'open':
         return {

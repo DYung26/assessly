@@ -85,3 +85,16 @@ export type EntitlementsResponse = {
   tier: 'free' | 'pro';
   entitlements: Entitlements;
 };
+
+/**
+ * Checkout status response from backend GET /billing/checkout-status
+ * Used on the success page to track whether payment/sync is complete
+ */
+export type CheckoutStatusResponse = {
+  state: 'active' | 'confirming' | 'open' | 'error';
+  subscription: SubscriptionData;
+  checkout: {
+    session_status: string | null;
+    payment_status: string | null;
+  };
+};

@@ -4,6 +4,7 @@ import type {
   CreateCheckoutSessionResult,
   CreatePortalSessionResult,
   SubscriptionData,
+  CheckoutStatusResponse,
 } from '@/types/billing';
 
 /**
@@ -13,6 +14,7 @@ import type {
  * All methods communicate with the backend billing API endpoints:
  * - POST /billing/checkout-session
  * - GET /billing/subscription
+ * - GET /billing/checkout-status
  * - POST /billing/portal-session
  */
 
@@ -66,6 +68,41 @@ export async function getCurrentSubscription(): Promise<SubscriptionData> {
     throw new Error('No subscription data in response');
   } catch (error) {
     console.error('Subscription fetch failed:', error);
+    throw error;
+  }
+}
+
+/**
+ * Get the status of a Stripe checkout session.
+ * 
+ * Used on the success page to track checkout/payment progress.
+ * Determines whether:
+ * - Local subscription is already active (state="active")
+ * - Stripe confirms payment but local sync not done (state="confirming")
+ * - Checkout is still in progress (state="open")
+ * - There's an error (state="error")
+ *
+ * Calls backend: GET /billing/checkout-status?session_id={sessionId}
+ * Response: { message, data: { state, subscription, checkout } }
+ *
+ * @param sessionId - Stripe Checkout Session ID from success URL
+ * @returns Promise with checkout status
+ * @throws Will throw if request fails
+ */
+export async function getCheckoutStatus(sessionId: string): Promise<CheckoutStatusResponse> {
+  try {
+    const response = await axiosInstance.get('/billing/checkout-status', {
+      params: { session_id: sessionId },
+    });
+    
+    // Backend returns { message, data: { state, subscription, checkout } }
+    if (response.data?.data) {
+      return response.data.data as CheckoutStatusResponse;
+    }
+    
+    throw new Error('No checkout status in response');
+  } catch (error) {
+    console.error('Checkout status fetch failed:', error);
     throw error;
   }
 }

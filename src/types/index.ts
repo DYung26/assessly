@@ -22,6 +22,7 @@ export type Message = {
   assessment_id?: string;
   chat_id?: string;
   file_ids?: string[];
+  response_file_ids?: string[];
   instructions?: string;
   role: RoleEnum;
   content: string;
@@ -60,6 +61,7 @@ export type FileType = {
   uploaded_at: string;
   url?: string;
   download_url: string;
+  file_purpose?: "user_upload" | "generated_response" | string;
 }
 
 export type ChatPromptBoxProps = {

@@ -6,6 +6,7 @@ import { InstructionsPopoverProps } from "@/types";
 export function InstructionsPopover({ action, instructions }: InstructionsPopoverProps & { instructions?: string[] }) {
   const items = instructions || [
     "Mark and grade script",
+    "Annotate this file",
     "Grade as absolute score and %",
     "Write detailed analysis",
     "Create a report",

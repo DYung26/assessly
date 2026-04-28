@@ -9,6 +9,8 @@ import CopyButton from "./CopyButton";
 import ReadAloud from "./ReadAloud";
 import DownloadButton from "./DownloadButton";
 import dynamic from "next/dynamic";
+import { parseResponseFileMarkers } from "@/lib/utils/responseFileMarker";
+
 const FilePreview = dynamic(() => import("reactjs-file-preview"), {
   ssr: false,
 });
@@ -25,12 +27,6 @@ export default function ChatMessages({
   scrollContainerRef: React.RefObject<HTMLElement | null>;
 }) {
   const containerRef = scrollContainerRef;
-  // const [autoScroll, setAutoScroll] = useState(true);
-  // const prevStreamingRef = useRef<string>("");
-
-  // console.log("chat_messages", messages.length);
-  // console.log("streamingContent", streamingContent);
-  // console.log("streamingMessageId", streamingMessageId);
 
   const scrollToBottom = useCallback((smooth = true) => {
     const c = containerRef.current;
@@ -42,25 +38,22 @@ export default function ChatMessages({
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages.length, streamingContent, scrollToBottom]); // - streamingContent
+  }, [messages.length, streamingContent, scrollToBottom]);
 
   return (
     <div className="flex flex-col w-full max-w-3xl py-2 px-2 space-y-4 overflow-y-auto">
       {messages.map((msg) => {
         const isStreaming = msg.id === streamingMessageId;
-        const { html: content, converted } = isStreaming
-          ? formatStreamingContent(streamingContent)
-          : formatStreamingContent(msg.content);
-
+        const contentToRender = isStreaming ? streamingContent : msg.content;
         const isUser = msg.role === RoleEnum.USER;
+
         return (
-          <div className="flex flex-col space-y-0.5 " key={msg.id}>
+          <div className="flex flex-col space-y-0.5" key={msg.id}>
             <div
-              key={msg.id}
               className={`rounded-xl p-2 shadow break-words ${isUser
                 ? "ml-auto bg-gray-100 text-left max-w-[50%] min-w-0"
                 : ""
-                }`}
+              }`}
             >
               {msg.file_ids && msg.role === RoleEnum.USER && (
                 <div className="flex flex-wrap justify-center items-center gap-3 mb-2 w-full">
@@ -74,30 +67,34 @@ export default function ChatMessages({
                 <div className="flex justify-start">
                   <ThreeDotLoader className="bg-black" />
                 </div>
+              ) : msg.role === RoleEnum.ASSISTANT ? (
+                <AssistantMessageRenderer content={contentToRender} />
               ) : (
                 <div
                   className="markdown-body"
-                  dangerouslySetInnerHTML={{ __html: content }}
+                  dangerouslySetInnerHTML={{
+                    __html: formatStreamingContent(contentToRender).html,
+                  }}
                 />
               )}
             </div>
-            {!isStreaming &&
+            {!isStreaming && (
               <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-                  <CopyButton
-                    htmlContent={content}
-                    rawText={converted}
+                <CopyButton
+                  htmlContent={formatStreamingContent(contentToRender).html}
+                  rawText={formatStreamingContent(contentToRender).converted}
+                />
+                <DownloadButton
+                  htmlContent={formatStreamingContent(contentToRender).html}
+                  rawText={formatStreamingContent(contentToRender).converted}
+                />
+                {!isUser && (
+                  <ReadAloud
+                    text={formatStreamingContent(contentToRender).converted}
                   />
-                  <DownloadButton
-                    htmlContent={content}
-                    rawText={converted}
-                  />
-                  {!isUser &&
-                    <ReadAloud
-                      text={converted}
-                    />
-                  }
+                )}
               </div>
-            }
+            )}
           </div>
         );
       })}
@@ -105,8 +102,36 @@ export default function ChatMessages({
   );
 }
 
+const AssistantMessageRenderer = memo(function AssistantMessageRenderer({
+  content,
+}: {
+  content: string;
+}) {
+  const parts = parseResponseFileMarkers(content);
+  const renderedParts = parts.map((part, index) =>
+    part.type === "text" ? (
+      <div
+        key={index}
+        className="markdown-body"
+        dangerouslySetInnerHTML={{
+          __html: formatStreamingContent(part.content!).html,
+        }}
+      />
+    ) : (
+      <div key={index} className="my-3">
+        <InlineResponseFilePreview
+          fileId={part.fileId!}
+          url={part.url}
+          label={part.label}
+        />
+      </div>
+    )
+  );
+
+  return <>{renderedParts}</>;
+});
+
 const MessageFilePreview = memo(function MessageFilePreview({ fileId }: { fileId: string }) {
-  console.log("MessageFilePreview", fileId);
   const { data: file, isLoading } = useFiles(fileId);
   const url = file?.url || file?.download_url;
 
@@ -126,3 +151,36 @@ const MessageFilePreview = memo(function MessageFilePreview({ fileId }: { fileId
     </div>
   );
 });
+
+const InlineResponseFilePreview = memo(function InlineResponseFilePreview({
+  fileId,
+  url: markerUrl,
+  label = "Marked file",
+}: {
+  fileId: string;
+  url?: string;
+  label?: string;
+}) {
+  const { data: file, isLoading } = useFiles(fileId);
+  const url = file?.url || file?.download_url || markerUrl;
+
+  if (isLoading) {
+    return (
+      <div className="w-40 h-40 rounded-xl bg-gray-100 flex-shrink-0 border shadow animate-pulse" />
+    );
+  }
+
+  if (!url) {
+    return null;
+  }
+
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <label className="text-xs font-medium text-blue-600">{label}</label>
+      <div className="w-40 h-40 rounded-xl bg-blue-50 flex-shrink-0 border border-blue-200 shadow overflow-hidden">
+        <FilePreview preview={url} />
+      </div>
+    </div>
+  );
+});
+

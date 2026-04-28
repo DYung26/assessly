@@ -55,7 +55,7 @@ export default function Assessment({ params }: PageProps) {
       setIsLocked(locked);
       setIsLoading(false);
     }
-  }, [assessment, chats, assessment_id, router]);
+  }, [assessment, chats, assessmentFiles, assessment_id, router]);
 
   const newChatMutation = useMutation({
     mutationFn: mutationFn,

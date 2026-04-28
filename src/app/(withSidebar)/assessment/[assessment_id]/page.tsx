@@ -1,19 +1,26 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import ChatPromptBox from "@/components/ChatBox";
 import ChatsList from "@/components/ChatsList";
 import ContextDock from "@/components/ContextDock";
 import PageLoader from "@/components/PageLoader";
 import TypingHeader from "@/components/TypingHeader";
-// import { sendMessage } from "@/lib/chat/sendMessage";
+import { NewAssessmentDialog } from "@/components/NewAssessmentDialog";
+import { AssessmentModeSwitcher } from "@/features/assessments/components/AssessmentModeSwitcher";
+import { isAssessmentModeLocked } from "@/features/assessments/utils/assessmentModeLock";
+import { getAssessmentModeContent } from "@/features/assessments/modes/assessmentModeContent";
+import type { AssessmentModeId } from "@/features/assessments/modes/assessmentModes";
 import { useAssessmentChats } from "@/lib/hooks/useChats";
+import { useAssessment } from "@/lib/hooks/useAssessment";
 import { useAuthRedirect } from "@/lib/hooks/useAuthRedirect";
 import { mutationFn } from "@/lib/mutationFn";
 import { queryClient } from "@/lib/queryClient";
 import { useChatStore } from "@/lib/store/chat";
 import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { use, useState } from "react";
+import { use } from "react";
+import { useAssessmentFiles } from "@/lib/hooks/useFiles";
 
 type PageProps = {
   params: Promise<{ assessment_id: string }>;
@@ -22,10 +29,33 @@ type PageProps = {
 export default function Assessment({ params }: PageProps) {
   useAuthRedirect();
   const { assessment_id } = use(params);
-  const { data: chats = [] } = useAssessmentChats(assessment_id as string);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const {setPendingMessage, setPendingInstructions, setPendingFileIds} = useChatStore();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
+  const [showNewAssessmentDialog, setShowNewAssessmentDialog] = useState(false);
+  const [dialogInitialMode, setDialogInitialMode] = useState<AssessmentModeId | null>(null);
+  
+  const { data: chats = [] } = useAssessmentChats(assessment_id as string);
+  const { data: assessment } = useAssessment(assessment_id as string);
+  const { data: assessmentFiles = [] } = useAssessmentFiles(assessment_id);
+  const { setPendingMessage, setPendingInstructions, setPendingFileIds } = useChatStore();
+
+  useEffect(() => {
+    if (assessment) {
+      if (!assessment.mode) {
+        router.push(`/assessment/${assessment_id}/setup`);
+        return;
+      }
+      
+      const locked = isAssessmentModeLocked({
+        chats,
+        assessmentFiles,
+      });
+      setIsLocked(locked);
+      setIsLoading(false);
+    }
+  }, [assessment, chats, assessment_id, router]);
 
   const newChatMutation = useMutation({
     mutationFn: mutationFn,
@@ -38,6 +68,15 @@ export default function Assessment({ params }: PageProps) {
       });
       const chatId = data.data.id;
       router.push(`/chat/${chatId}`);
+    },
+  });
+
+  const updateModeMutation = useMutation({
+    mutationFn: mutationFn,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['assessment', assessment_id],
+      });
     },
   });
 
@@ -65,22 +104,65 @@ export default function Assessment({ params }: PageProps) {
     setPendingFileIds(fileIds);
   }
 
-  if (!assessment_id) return null;
+  const handleModeChange = (modeId: AssessmentModeId) => {
+    if (!isLocked) {
+      updateModeMutation.mutate({
+        url: `/assessment/${assessment_id}`,
+        method: 'PUT',
+        body: {
+          mode: modeId,
+        },
+      });
+    }
+  };
+
+  const handleCreateAssessmentInMode = (modeId: AssessmentModeId) => {
+    setDialogInitialMode(modeId);
+    setShowNewAssessmentDialog(true);
+  };
+
+  if (!assessment_id || isLoading) return null;
+
+  const modeContent = getAssessmentModeContent(assessment?.mode as AssessmentModeId);
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
-      {chats &&
-        <main
-          className="flex flex-col flex-1 px-4 py-4 gap-4 items-center
-                     justify-center"
-        >
-          <TypingHeader />
-          <ChatPromptBox action={handleSend} />
-          {/*action={() => { }} />*/}
-          <ContextDock />
-          <ChatsList chats={chats} />
-        </main>
-      }
+      {assessment?.mode && (
+        <>
+          <div className="flex justify-center pt-4">
+            <AssessmentModeSwitcher 
+              selectedMode={assessment.mode as AssessmentModeId}
+              isLocked={isLocked}
+              isChanging={updateModeMutation.isPending}
+              onModeChange={handleModeChange}
+              onCreateAssessmentInMode={handleCreateAssessmentInMode}
+            />
+          </div>
+          {chats && (
+            <main
+              className="flex flex-col flex-1 px-4 py-4 gap-4 items-center
+                         justify-center"
+            >
+              <TypingHeader 
+                headerTitles={modeContent.headerTitles}
+                headerDescription={modeContent.headerDescription}
+              />
+              <ChatPromptBox 
+                action={handleSend}
+                quickInstructions={modeContent.quickInstructions}
+              />
+              <ContextDock uploadLabels={modeContent.uploadLabels} />
+              <ChatsList chats={chats} />
+            </main>
+          )}
+        </>
+      )}
+      <NewAssessmentDialog 
+        open={showNewAssessmentDialog}
+        onOpenChange={setShowNewAssessmentDialog}
+        initialMode={dialogInitialMode || undefined}
+        skipModeSetup={true}
+      />
       {isSubmitting ? <PageLoader /> : null}
     </div>
   );

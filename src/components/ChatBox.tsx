@@ -16,7 +16,7 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "./ui/tooltip";
 import { APP_CONFIG } from "@/lib/config";
 import { FeatureLockedButton } from "./FeatureLockedButton";
 
-export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
+export default function ChatPromptBox({ action, quickInstructions }: ChatPromptBoxProps & { quickInstructions?: string[] }) {
   const [files, setFiles] = useState<File[]>([]);
   const [fileIds, setFileIds] = useState<string[]>([]);
   const [instructions, setInstructions] = useState<string[]>([]);
@@ -351,7 +351,7 @@ export default function ChatPromptBox({ action }: ChatPromptBoxProps) {
                   <span className="text-sm">Instructions</span>
                 </button>
               </PopoverTrigger>
-              <InstructionsPopover action={handleQuickInstructions} />
+              <InstructionsPopover action={handleQuickInstructions} instructions={quickInstructions} />
             </Popover>
           </div>
 

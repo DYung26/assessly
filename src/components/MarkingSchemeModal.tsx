@@ -33,7 +33,7 @@ interface MarkingSchemeModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   assessmentId: string;
-  filesData?: MarkingSchemeFile[];
+  assessmentFiles?: MarkingSchemeFile[];
 }
 
 const MarkingSchemeFilePreview = memo(function MarkingSchemeFilePreview({
@@ -93,7 +93,7 @@ export default function MarkingSchemeModal({
   open,
   onOpenChange,
   assessmentId,
-  filesData,
+  assessmentFiles,
 }: MarkingSchemeModalProps) {
   const [isUploading, setIsUploading] = useState(false);
 
@@ -157,13 +157,13 @@ export default function MarkingSchemeModal({
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto">
-          {!filesData ? (
+          {!assessmentFiles ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
             </div>
-          ) : filesData.length > 0 ? (
+          ) : assessmentFiles.length > 0 ? (
             <div className="flex flex-wrap gap-2 p-2">
-              {filesData.map((file) => (
+              {assessmentFiles.map((file) => (
                 <MarkingSchemeFilePreview
                   key={file.id}
                   file={file}

@@ -11,10 +11,13 @@ import { ThreeDotLoader } from "./ui/three-dot-loader";
 import { queryClient } from "@/lib/queryClient";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import type { AssessmentModeId } from "@/features/assessments/modes/assessmentModes";
 
 interface NewAssessmentDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  initialMode?: AssessmentModeId;
+  skipModeSetup?: boolean;
 }
 
 const nameSchema = z.object({
@@ -23,7 +26,12 @@ const nameSchema = z.object({
 
 type NameSchema = z.infer<typeof nameSchema>;
 
-export function NewAssessmentDialog({ open, onOpenChange }: NewAssessmentDialogProps) {
+export function NewAssessmentDialog({ 
+  open, 
+  onOpenChange, 
+  initialMode, 
+  skipModeSetup,
+}: NewAssessmentDialogProps) {
   const { data: user } = useUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
@@ -46,7 +54,11 @@ export function NewAssessmentDialog({ open, onOpenChange }: NewAssessmentDialogP
       });
       toast.success("Assessment created successfully");
       onOpenChange(false);
-      router.push(`/assessment/${data.data.id}`);
+      
+      const nextRoute = skipModeSetup 
+        ? `/assessment/${data.data.id}`
+        : `/assessment/${data.data.id}/setup`;
+      router.push(nextRoute);
       form.reset();
     },
     onError: (error: unknown) => {
@@ -58,11 +70,17 @@ export function NewAssessmentDialog({ open, onOpenChange }: NewAssessmentDialogP
 
   const onSubmit = (data: NameSchema) => {
     console.log("Form submitted with data:", data);
+    const payload: Record<string, unknown> = {
+      title: data.name
+    };
+    
+    if (initialMode) {
+      payload.mode = initialMode;
+    }
+    
     newAssessmentMutation.mutate({
       url: "/assessment",
-      body: {
-        title: data.name
-      },
+      body: payload,
     });
   }
 

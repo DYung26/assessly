@@ -43,6 +43,7 @@ export type Assessment = {
   user_id: string;
   title: string;
   created_at: string;
+  mode?: string;
 }
 
 export enum RoleEnum {

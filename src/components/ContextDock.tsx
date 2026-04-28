@@ -9,22 +9,16 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { useUser } from "@/lib/hooks/useUser";
 import axiosInstance from "@/lib/axiosInstance";
+import { useAssessmentFiles } from "@/lib/hooks/useFiles";
 
-export default function ContextDock () {
+export default function ContextDock ({ uploadLabels }: { uploadLabels?: { primary: string; secondary: string | null; generic: string } }) {
   const params = useParams();
   const {  data: user } = useUser();
   const assessmentId = params?.assessment_id as string;
   const [markingSchemeModalOpen, setMarkingSchemeModalOpen] = useState(false);
   const [instructionsDialogOpen, setInstructionsDialogOpen] = useState(false);
 
-  const { data: filesData } = useQuery({
-    queryKey: ["assessment-files", assessmentId],
-    queryFn: async () => {
-      const res = await axiosInstance.get(`/assessment/${assessmentId}/files`);
-      return res.data.data.items || [];
-    },
-    enabled: !!assessmentId,
-  });
+  const { data: assessmentFiles = [] } = useAssessmentFiles(assessmentId);
 
   const { data: assessmentData } = useQuery({
     queryKey: ["assessment-detail", assessmentId],
@@ -57,7 +51,7 @@ export default function ContextDock () {
     });
   };
 
-  const markingSchemeCount = filesData?.length || 0;
+  const markingSchemeCount = assessmentFiles?.length || 0;
   const hasCustomInstructions = !!(assessmentData?.custom_instruction && assessmentData.custom_instruction.trim());
 
   return (
@@ -71,7 +65,7 @@ export default function ContextDock () {
         }`}
       >
         <div className="flex flex-col text-left">
-          <span className="text-sm font-medium">Upload marking scheme</span>
+          <span className="text-sm font-medium">{uploadLabels?.primary || 'Upload marking scheme'}</span>
           <span className="text-xs text-gray-500">Supported documents & code files</span>
         </div>
 
@@ -108,7 +102,7 @@ export default function ContextDock () {
         open={markingSchemeModalOpen}
         onOpenChange={setMarkingSchemeModalOpen}
         assessmentId={assessmentId}
-        filesData={filesData}
+        assessmentFiles={assessmentFiles}
       />
 
       <InstructionsDialog

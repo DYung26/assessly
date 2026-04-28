@@ -3,8 +3,8 @@ import { PopoverContent } from "@/components/ui/popover";
 import { Check, Plus } from "lucide-react";
 import { InstructionsPopoverProps } from "@/types";
 
-export function InstructionsPopover({ action }: InstructionsPopoverProps) {
-  const items = [
+export function InstructionsPopover({ action, instructions }: InstructionsPopoverProps & { instructions?: string[] }) {
+  const items = instructions || [
     "Mark and grade script",
     "Grade as absolute score and %",
     "Write detailed analysis",

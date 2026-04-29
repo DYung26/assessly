@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { mutationFn } from "@/lib/mutationFn";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -36,6 +36,9 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
 
   const { login } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect") || "/";
 
   const form = useForm<LoginSchema>({
     mode: "onChange",
@@ -46,15 +49,13 @@ export default function LoginForm() {
     },
   });
 
-  const router = useRouter()
-
   const loginMutation = useMutation({
     mutationFn: mutationFn,
     onMutate: () => setIsSubmitting(true),
     onSettled: () => setIsSubmitting(false),
     onSuccess: (data) => {
       login(data.data.user, data.data.access_token);
-      router.push("/");
+      router.push(redirectUrl);
     },
     onError: (error: unknown) => {
       console.error("Login failed:", error);

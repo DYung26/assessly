@@ -2,22 +2,25 @@
 
 import { Button } from "@/components/ui/button";
 import { useOAuth } from "@/lib/hooks/useOAuth";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { ThreeDotLoader } from "./ui/three-dot-loader";
 
 interface GoogleSignInButtonProps {
   isSubmitting?: boolean;
 }
 
-export function GoogleSignInButton({ isSubmitting = false }: GoogleSignInButtonProps) {
+function GoogleSignInButtonContent({ isSubmitting = false }: GoogleSignInButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { getGoogleLoginUrl } = useOAuth();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirect");
 
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
-      const authUrl = await getGoogleLoginUrl();
+      const authUrl = await getGoogleLoginUrl(redirectUrl || undefined);
       window.location.href = authUrl;
     } catch (error) {
       toast("Google Sign-In failed", {
@@ -61,5 +64,13 @@ export function GoogleSignInButton({ isSubmitting = false }: GoogleSignInButtonP
         </>
       )}
     </Button>
+  );
+}
+
+export function GoogleSignInButton(props: GoogleSignInButtonProps) {
+  return (
+    <Suspense fallback={null}>
+      <GoogleSignInButtonContent {...props} />
+    </Suspense>
   );
 }

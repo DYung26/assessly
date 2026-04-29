@@ -17,8 +17,9 @@ interface OAuthStatusResponse {
 }
 
 export function useOAuth() {
-  const getGoogleLoginUrl = async (): Promise<string> => {
-    const res = await axiosInstance.get<OAuthLoginResponse>("/oauth/google/login");
+  const getGoogleLoginUrl = async (redirectUrl?: string): Promise<string> => {
+    const params = redirectUrl ? { redirect: redirectUrl } : {};
+    const res = await axiosInstance.get<OAuthLoginResponse>("/oauth/google/login", { params });
     return res.data.data.auth_url;
   };
 

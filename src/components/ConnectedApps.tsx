@@ -29,7 +29,7 @@ export function ConnectedApps({ onProviderStatusChange }: ConnectedAppsProps) {
   const handleConnectGoogle = async () => {
     try {
       setIsLinking(true);
-      const authUrl = await getGoogleLoginUrl();
+      const authUrl = await getGoogleLoginUrl(undefined);
       window.location.href = authUrl;
     } catch (error) {
       toast("Connection failed", {

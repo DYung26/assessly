@@ -13,6 +13,7 @@ function OAuthCallbackContent() {
   const searchParams = useSearchParams();
   const { login } = useAuth();
   const [error, setError] = useState<string | null>(null);
+  const redirectUrl = searchParams.get("redirect") || "/";
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -47,7 +48,7 @@ function OAuthCallbackContent() {
 
         if (token && user) {
           login(user, token);
-          router.push("/");
+          router.push(redirectUrl);
         } else {
           setError("Failed to authenticate");
           toast("Authentication failed", {
@@ -66,7 +67,7 @@ function OAuthCallbackContent() {
     };
 
     handleCallback();
-  }, [searchParams, router, login]);
+  }, [searchParams, redirectUrl, router, login]);
 
   if (error) {
     return (

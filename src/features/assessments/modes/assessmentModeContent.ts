@@ -26,12 +26,16 @@ export const ASSESSMENT_MODE_CONTENT: Record<AssessmentModeId, AssessmentModeCon
       generic: 'Upload files',
     },
     quickInstructions: [
-      'Mark this submission',
-      'Annotate this file',
-      'Generate feedback report',
-      'Show missing points',
-      'Suggest improvements',
+      'Mark, grade and analyse the script',
+      'Annotate the marking',
+      'Grade as absolute score and %',
+      'Generate feedback report', // include analysis
+      // 'Show missing points',
+      // 'Suggest improvements',
+      // 'Write detailed analysis',
       'Rewrite this answer to improve it',
+      'Create a study plan based on identified weaknesses', // timetable
+      'Create similar practice questions'
     ],
   },
   explore_anything: {
@@ -52,8 +56,8 @@ export const ASSESSMENT_MODE_CONTENT: Record<AssessmentModeId, AssessmentModeCon
       'Extract key points',
       'Compare documents',
       'Explain this simply',
-      'Draft from these files',
-      'Suggest next steps',
+      // 'Draft from these files',
+      // 'Suggest next steps',
     ],
   },
   learn_from_materials: {

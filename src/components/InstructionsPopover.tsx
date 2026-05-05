@@ -26,19 +26,40 @@ export function InstructionsPopover({ action, instructions }: InstructionsPopove
     action(selected);
   }, [selected, action]);
 
+  const clearSelected = () => {
+    setSelected([]);
+    action([]);
+  };
+
   return (
     <PopoverContent
       side="bottom"
       align="start"
-      className="w-64 p-2 space-y-1"
+      className="w-56 sm:w-64 p-2 space-y-1"
     >
-      <h4 className="font-medium text-sm text-gray-900">Quick Instructions</h4>
+      <div className="flex items-center justify-between mb-2">
+        <h4 className="font-medium text-sm text-gray-900">Quick Instructions</h4>
+        {selected.length > 0 && (
+          <button
+            type="button"
+            onClick={clearSelected}
+            className="text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors"
+            aria-label="Clear selected instructions"
+          >
+            Clear
+          </button>
+        )}
+      </div>
       <div className="space-y-1.5">
         {items.map((item) => {
           const isSelected = selected.includes(item);
           return (
             <button
               key={item}
+              type="button"
+              role="checkbox"
+              aria-checked={isSelected}
+              aria-label={`${isSelected ? "Deselect" : "Select"} ${item}`}
               onClick={() => toggleItem(item)}
               className={`flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-lg transition cursor-pointer text-sm
                 ${isSelected

@@ -330,7 +330,7 @@ export default function ChatPromptBox({ action, quickInstructions }: ChatPromptB
         }
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 min-w-0">
             <label className="inline-flex items-center gap-1 border px-1.5 py-1 rounded-xl cursor-pointer text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
             >
               <Paperclip className="w-4 h-4" />
@@ -344,15 +344,56 @@ export default function ChatPromptBox({ action, quickInstructions }: ChatPromptB
               />
             </label>
 
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="inline-flex items-center gap-1 border px-1.5 py-1 rounded-xl cursor-pointer text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors">
-                  <ListChecks className="w-4 h-4" />
-                  <span className="text-sm">Instructions</span>
-                </button>
-              </PopoverTrigger>
-              <InstructionsPopover action={handleQuickInstructions} instructions={quickInstructions} />
-            </Popover>
+            <div className="flex items-center gap-1 min-w-0">
+              <Popover>
+                <PopoverTrigger asChild>
+                  {(() => {
+                    const hasInstructions = instructions.length > 0;
+                    return (
+                      <button
+                        className={`inline-flex items-center gap-1 px-1.5 py-1 rounded-xl cursor-pointer transition-colors border ${
+                          hasInstructions
+                            ? "border-blue-400 bg-blue-50 text-blue-600 hover:bg-blue-100"
+                            : "border-gray-300 text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                        }`}
+                        aria-label={
+                          hasInstructions
+                            ? `Instructions, ${instructions.length} selected`
+                            : "Instructions"
+                        }
+                        aria-pressed={hasInstructions}
+                      >
+                        <ListChecks className="w-4 h-4" />
+                        <span className="text-sm">
+                          Instructions{hasInstructions ? ` · ${instructions.length}` : ""}
+                        </span>
+                      </button>
+                    );
+                  })()}
+                </PopoverTrigger>
+                <InstructionsPopover action={handleQuickInstructions} instructions={quickInstructions} />
+              </Popover>
+
+              {instructions.length > 0 && instructions[0] && (
+                <div className="hidden md:flex items-center gap-1 min-w-0">
+                  <span
+                    className="inline-flex items-center max-w-[220px] truncate px-2 py-1 rounded-full border border-blue-300 bg-blue-100 text-xs text-blue-700"
+                    title={instructions[0]}
+                  >
+                    {instructions[0]}
+                  </span>
+
+                  {instructions.length > 1 && (
+                    <span
+                      className="inline-flex items-center px-1.5 py-0.5 rounded-full border border-blue-300 bg-blue-50 text-xs font-medium text-blue-700"
+                      aria-label={`${instructions.length - 1} more instruction${instructions.length - 1 === 1 ? "" : "s"} selected`}
+                    >
+                      +{instructions.length - 1}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="flex gap-2 items-center">
